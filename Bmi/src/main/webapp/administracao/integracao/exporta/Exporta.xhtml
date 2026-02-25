@@ -14,15 +14,45 @@
 			<p:panel columns="6" id="painel" header="Critérios de seleção"
 				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
 				<p:outputLabel for="mes" value="Mês referência" />
-				<p:datePicker id="mes" value="#{boletimBean.filtroDataReferencia}" view="month"
-					timeZone="UTC-3"  pattern="MM/yyyy" required="true" requiredMessage="Informe o mês/ano para exportação"
+				<p:datePicker id="mes" value="#{boletimBean.filtroDataReferencia}"
+					view="month" timeZone="UTC-3" pattern="MM/yyyy" required="true"
+					requiredMessage="Informe o mês/ano para exportação"
 					yearNavigator="true" />
-				
-					<p:commandButton title="importar" value="Exportar" 
-						action="#{boletimBean.exportar}" icon="pi pi-sign-in"
-						update="@form" />
+				<p:commandButton value="Pesquisar" action="#{boletimBean.pesquisar}"
+					update="@form" />
+				<p:commandButton title="Exporta BMI´s bloqueados" value="Exportar"
+					action="#{boletimBean.exportar}" icon="pi pi-sign-in"
+					update="@form" />
 
 			</p:panel>
+			<p:dataTable id="listaProdutos" var="item"
+				value="#{boletimBean.boletins}"
+				emptyMessage="Boletim não encontrado" paginator="true" rows="20"
+				paginatorAlwaysVisible="false">
+				<p:column style="width: 10px; text-align: center">
+					<p:button outcome="/boletim/Consistencia" icon="ui-icon-pencil"
+						title="Editar">
+						<f:param name="idStr" value="#{item.id}" />
+						<f:param name="modo" value="c" />
+					</p:button>
+				</p:column>
+				<p:column headerText="Exportar"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{item.bloqueado ? 'Sim' : 'Não'}" style="#{item.bloqueado ? 'color: black' : 'color: red'}"/>
+				</p:column>
+				<p:column headerText="Empresa"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{item.empresa.numero}" style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
+				</p:column>
+				<p:column headerText="Razão social" 
+					style="text-align: center; width: 100px  ">
+					<h:outputText value="#{item.empresa.razaoSocial}" style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
+				</p:column>
+				<p:column headerText="Movimento"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{item.tipoMovimento.descricao}" style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
+				</p:column>
+			</p:dataTable>
 		</h:form>
 	</ui:define>
 </ui:composition>

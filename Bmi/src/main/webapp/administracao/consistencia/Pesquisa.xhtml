@@ -1,0 +1,742 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">BMI</ui:define>
+
+	<ui:define name="corpo">
+		<h:form>
+			<h1>Consistência dos valores mensais</h1>
+			<p:messages autoUpdate="true" />
+			<p:toolbar style="margin-top: 20px">
+				<p:toolbarGroup>
+					<p:commandButton value="Pesquisar" icon="pi pi-search"
+						action="#{boletimBean.consistirSistema}" update="@form" />
+					<span class="ui-separator"> <span
+						class="ui-icon pi pi-ellipsis-v" />
+					</span>
+				</p:toolbarGroup>
+			</p:toolbar>
+
+			<h:panelGrid columns="2" id="painel"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+
+				<p:outputLabel value="Tipo de Movimento" for="tipoMovimento" />
+				<p:selectOneMenu id="tipoMovimento" required="true"
+					value="#{boletimBean.filtroTipoMovimento}">
+					<f:selectItem itemLabel="Selecione o tipo" />
+					<f:selectItems value="#{boletimBean.tiposMovimento}"
+						var="tipoMovimento" itemValue="#{tipoMovimento}"
+						itemLabel="#{tipoMovimento.descricao}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="mes" value="Mês referência" />
+				<p:datePicker id="mes" value="#{boletimBean.filtroDataReferencia}"
+					required="true" timeZone="GMT-3" view="month" pattern="MM/yyyy"
+					yearNavigator="true" />
+			</h:panelGrid>
+			
+			
+			
+			<p:panel header="Dados operacionais">
+				<h:panelGrid border="0" columns="2"
+					style="width: 100%;  margin-top: 20px">
+					<p:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+						columnClasses="rotulo, campo">
+						<p:outputLabel value="Frota efetiva" for="frtEfetiva" />
+						<p:inputNumber value="#{boletimBean.boletimSistema.frotaEfetiva}"
+							id="frtEfetiva" />
+
+
+						<p:outputLabel value="Frota reserva" for="frtReserva" />
+						<p:inputNumber value="#{boletimBean.boletimSistema.frotaReserva}"
+							id="frtReserva" />
+					</p:panelGrid>
+					<p:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+						columnClasses="rotulo, campo">
+						<p:outputLabel value="Quilometragem Piso I" />
+						<p:inputNumber value="#{boletimBean.boletimSistema.quilometragem_piso1}"
+							decimalPlaces="3" />
+						<p:outputLabel value="Quilometragem Piso II" />
+						<p:inputNumber value="#{boletimBean.boletimSistema.quilometragem_piso2}"
+							decimalPlaces="3" />
+						<p:outputLabel value="Quilometragem Piso III" />
+						<p:inputNumber value="#{boletimBean.boletimSistema.quilometragem_piso3}"
+							decimalPlaces="3" />
+					</p:panelGrid>
+
+				</h:panelGrid>
+			</p:panel>
+			<p:panel header="Custos">
+				<p:tabView>
+					<p:tab title="Combustiveis e lubrificantes">
+
+						<p:dataTable value="#{boletimBean.boletimSistema.combusLubrif}"
+							var="item" rowIndexVar="linha" >
+							<p:column headerText="tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Quantidade"
+								style="text-align: center; width: 100px">
+										<p:outputLabel value="#{item.quantidade}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Preço unitário"
+								style="text-align: center; width: 100px; #{(item.diferencaPreco gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaPreco gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.preco}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preço unitário do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.precoPlanilha}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Índice de consumo"
+								style="text-align: center; width: 100px; #{(item.diferencaIndice gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaIndice gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.indiceConsumo}">
+									<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Índice de consumo do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.indiceConsumoPlanilha}">
+									<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Custo por quilômetro"
+								style="text-align: center; width: 100px; #{(item.diferencaCusto gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaCusto gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+ 								<p:outputLabel value="#{item.custoQuilometro}">
+									<f:convertNumber maxFractionDigits="4" minFractionDigits="4" />
+								</p:outputLabel> 
+							</p:column>
+							<p:column headerText="Custo por quilômetro do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.custoQuilometroPlanilha}">
+									<f:convertNumber maxFractionDigits="4" minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Peças e acessórios e Serviços de terceiros">
+						<p:panelGrid>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletimSistema.diferencaPecas gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletimSistema.diferencaPecas gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletimSistema.custoPecasKm}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{boletimBean.boletimSistema.custoPecasSistema}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:dataTable value="#{boletimBean.boletimSistema.servicos}" var="item"
+							rowIndexVar="linha" editable="true">
+
+
+							<p:column style="width:10px">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoServico.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+						</p:dataTable>
+
+						<p:dataTable value="#{boletimBean.boletimSistema.pecasServicos}"
+							var="item" rowIndexVar="linha" editable="true">
+
+							<p:column style="width:10px">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Rodagem">
+						<p:panelGrid>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletimSistema.diferencaRodagem gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletimSistema.diferencaRodagem gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletimSistema.custoRodagemKm}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletimSistema.custoRodagemKmSistema}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<p:dataTable value="#{boletimBean.boletimSistema.rodagem}" var="item"
+							rowIndexVar="linha" editable="true">
+
+
+
+							<p:column style="width:2rem">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+							<p:column headerText="tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Quantidade"
+								style="text-align: center; width: 100px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.quantidade}">
+											<f:convertNumber maxFractionDigits="0" minFractionDigits="0" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.quantidade}" decimalPlaces="0"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+
+							</p:column>
+
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Preço unitário"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.preco}"
+									style="#{(item.diferencaPreco gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaPreco gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preço unitário do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.precoPlanilha}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Despesas gerais">
+
+						<p:panelGrid>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletimSistema.diferencaDespesas gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletimSistema.diferencaDespesas gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletimSistema.despesasKm}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{boletimBean.boletimSistema.despesasSistema}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:dataTable value="#{boletimBean.boletimSistema.despesasAdm}" var="item"
+							rowIndexVar="linha" editable="true">
+
+
+							<p:column style="width:10px">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+							<p:column headerText="Classe"
+								style="text-align: left; width: 40px">
+								<h:outputText
+									value="#{item.tipoDespesa.categoriaDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Descrição"
+								style="text-align: center; width: 160px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{item.descricao}" />
+
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{item.descricao}" size="80" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Tributos">
+
+						<p:panelGrid>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletimSistema.diferencaTributos gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletimSistema.diferencaTributos gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletimSistema.custoTributosKm}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="#{boletimBean.boletimSistema.tributosSistema}">
+										<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+									</p:outputLabel>
+
+
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:dataTable value="#{boletimBean.boletimSistema.tributos}" var="item"
+							rowIndexVar="linha" editable="true">
+
+
+							<p:column style="width:10px">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+							<p:column headerText="Classe"
+								style="text-align: left; width: 40px">
+								<h:outputText
+									value="#{item.tipoDespesa.categoriaDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoDespesa.descricao}" />
+							</p:column>
+
+
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Descrição"
+								style="text-align: center; width: 160px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{item.descricao}" />
+
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{item.descricao}" size="80" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Remunerações">
+						<p:commandButton value="Alterar" minHeight="40" width="350"
+							showEffect="fade" onclick="PF('dialogoPessoal').show()" />
+
+						<p:dialog widgetVar="dialogoPessoal" header="Custos de pessoal">
+							<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+								action="#{boletimBean.salvarEconsistir}" update="@form" />
+							<p:dataTable value="#{boletimBean.boletimSistema.custosPessoal}"
+								var="item" rowIndexVar="linha">
+								<p:column headerText="Tipo"
+									style="text-align: center; width: 100px">
+									<h:outputText value="#{item.cargo.tipoCargo.descricao}" />
+								</p:column>
+
+
+								<p:column headerText="Cargo"
+									style="text-align: center; width: 100px">
+									<p:outputLabel value="#{item.cargo.descricao}" />
+								</p:column>
+
+								<p:column headerText="Elementos"
+									style="text-align: center; width: 100px">
+									<p:inputNumber size="5" value="#{item.elementos}" />
+								</p:column>
+
+								<p:column headerText="Salários"
+									style="text-align: center; width: 100px">
+									<p:inputNumber size="15" value="#{item.salarios}"
+										decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+								</p:column>
+								<p:column headerText="Prêmios"
+									style="text-align: center; width: 100px">
+									<p:inputNumber size="15" value="#{item.premios}"
+										decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+								</p:column>
+								<p:column headerText="Horas extras"
+									style="text-align: center; width: 100px">
+									<p:inputNumber size="15" value="#{item.horasExtras}"
+										decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+								</p:column>
+								<p:column headerText="Outros"
+									style="text-align: center; width: 100px">
+									<p:inputNumber size="15" value="#{item.outrosPagamentos}"
+										decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+								</p:column>
+								<p:column headerText="Encargos"
+									style="text-align: center; width: 100px">
+									<p:inputNumber size="15" value="#{item.encargosSociais}"
+										decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+								</p:column>
+							</p:dataTable>
+						</p:dialog>
+						<p:dataTable value="#{boletimBean.custosPessoal}" var="item"
+							rowIndexVar="linha" frozenColumns="1">
+
+							<p:column headerText="Categoria"
+								style="text-align: center; width: 100px">
+								<h:outputText value="#{item.tipoCargo.descricao}" />
+							</p:column>
+							<p:column headerText="Elementos"
+								style="text-align: center; width: 100px">
+								<h:outputText value="#{item.elementos}" />
+							</p:column>
+							<p:column headerText="Custo/veículo empresa"
+								style="text-align: center; width: 100px; #{(item.diferencaCusto gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaCusto gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.custoVeiculo}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Custo/veículo sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.custoVeiculoPlanilha}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Salário empresa"
+								style="text-align: center; width: 100px; #{(item.diferencaSalario gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaSalario gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.salarioMedio}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Salário sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.salarioMedioPlanilha}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Remuneração empresa"
+								style="text-align: center; width: 100px; #{(item.diferencaRemunera gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaRemunera gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.remuneracaoMedia}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Remuneração sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.remuneracaoMediaPlanilha}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Encargos sociais empresa"
+								style="text-align: center; width: 100px; #{(item.diferencaEncargos gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaEncargos gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.taxaEncargos}">
+									<f:convertNumber type="percent" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Encargos sociais sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.taxaEncargosPlanilha}">
+									<f:convertNumber type="percent" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="Fator de utilização empresa"
+								style="text-align: center; width: 100px;#{(item.diferencaFU gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaFU gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.fatorUtilizacao}">
+									<f:convertNumber maxFractionDigits="4" minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="Fator de utilização sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.fatorUtilizacaoPlanilha}">
+									<f:convertNumber maxFractionDigits="4" minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Vale alimentação e Plano de saúde">
+						<p:dataTable value="#{boletimBean.boletimSistema.valePlano}" var="item"
+							rowIndexVar="linha" editable="true">
+
+
+							<p:column style="width:2rem">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+							<p:column headerText="Tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Quantidade"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{boletimBean.boletimSistema.elementos}">
+									<f:convertNumber type="number" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preco Unitário"
+								style="text-align: center; width: 100px; #{(item.diferencaValor gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaValor gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.valorUnitario}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preço unitário do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.valorPlanilha}">
+									<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Frota de apoio">
+
+						<p:dataTable value="#{boletimBean.boletimSistema.frotasApoio}" var="item"
+							rowIndexVar="linha" editable="true">
+
+							<p:column style="width:2rem">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+							<p:column headerText="tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoVeiculoApoio.descricao}" />
+							</p:column>
+							<p:column headerText="Quilomtragem"
+								style="text-align: center; width: 100px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.quilometragem}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.quilometragem}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Custo por quilômetro"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.custoQuilometro}">
+									<f:convertNumber maxFractionDigits="4" minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+							<!-- 							<p:column headerText="Custo por quilômetro do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.custoQuilometroPlanilha}">
+									<f:convertNumber maxFractionDigits="4" minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column> -->
+
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Receitas e imobilizado">
+						<p:dataTable value="#{boletimBean.boletimSistema.receitasImobilizado}"
+							var="item" rowIndexVar="linha" editable="false">
+
+
+							<p:column style="width:10px">
+								<p:rowEditor editTitle="Altera" cancelTitle="Cancela"
+									saveTitle="Confirma" />
+							</p:column>
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoReceitaImobilizado.descricao}" />
+							</p:column>
+
+
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<p:outputLabel value="#{item.valor}">
+											<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+										</p:outputLabel>
+									</f:facet>
+									<f:facet name="input">
+										<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+											thousandSeparator="" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+							<p:column headerText="Descrição"
+								style="text-align: center; width: 160px">
+								<p:cellEditor>
+									<f:facet name="output">
+										<h:outputText value="#{item.descricao}" />
+
+									</f:facet>
+									<f:facet name="input">
+										<p:inputText value="#{item.descricao}" size="80" />
+									</f:facet>
+								</p:cellEditor>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

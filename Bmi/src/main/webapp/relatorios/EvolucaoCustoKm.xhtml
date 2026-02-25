@@ -1,0 +1,102 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	<f:metadata>
+		<f:viewParam name="dummy" />
+		<f:event listener="#{graficoBean.preRender}" type="preRenderView" />
+	</f:metadata>
+	<ui:define name="titulo">BMI</ui:define>
+
+	<ui:define name="corpo">
+		<h:form>
+
+			<h1>Evolução dos custos unitários</h1>
+			<p:messages autoUpdate="true" />
+			<p:toolbar style="margin-top: 20px">
+				<p:toolbarGroup align="left">
+					<p:commandButton value="Exibir" icon="pi pi-file-pdf"
+						styleClass="ui-button-outlined"
+						action="#{graficoBean.exibirEvolucaoCustoKm}" update="@form"
+						ajax="false" />
+				</p:toolbarGroup>
+			</p:toolbar>
+
+			<p:panelGrid columns="8" id="painel"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+
+				<p:outputLabel value="Empresa" for="filtroEmp" />
+				<p:selectOneMenu id="filtroEmp" value="#{graficoBean.empresa}" required="true" >
+
+					<f:selectItem itemLabel="Selecione a empresa" />
+					<f:selectItems value="#{principalBean.listaEmpresa}"
+						var="filtroEmp" itemValue="#{filtroEmp}" itemLabel="#{filtroEmp}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel value="Tipo de Movimento" for="tipoMovimento" />
+				<p:selectOneMenu id="tipoMovimento" required="true"
+					value="#{graficoBean.tipoMovimento}">
+					<f:selectItem itemLabel="Selecione o tipo" />
+					<f:selectItems value="#{principalBean.tiposMovimento}"
+						var="tipoMovimento" itemValue="#{tipoMovimento}"
+						itemLabel="#{tipoMovimento.descricao}" />
+				</p:selectOneMenu>
+
+				<p:outputLabel for="dataInicio" value="Data inicial" />
+				<p:datePicker id="dataInicio" value="#{graficoBean.dataInicial}"
+					view="month" pattern="MM/yyyy" yearNavigator="true" required="true" />
+
+				<p:outputLabel for="dataFim" value="Data final" />
+				<p:datePicker id="dataFim" value="#{graficoBean.dataFinal}" required="true"
+					view="month" pattern="MM/yyyy" yearNavigator="true" />
+			</p:panelGrid>
+
+			<p:tabView>
+				<p:tab title="Gráfico">
+					<p:lineChart model="#{graficoBean.model}" style="height: 400px" />
+				</p:tab>
+				<p:tab title="Tabela">
+					<p:dataTable id="lista" var="item" value="#{graficoBean.boletins}"
+						emptyMessage="Boletim não encontrado" paginator="true" rows="20"
+						paginatorAlwaysVisible="false">
+						<p:column headerText="Data de referência"
+							style="text-align: center; width: 100px">
+							<h:outputText value="#{item.dataReferencia}">
+								<f:convertDateTime pattern="MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Quilometragem" style="text-align: center; width: 100px">
+							<h:outputText value="#{item.quilometragemTotal}">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Custo variável/KM"
+							style="text-align: center; width: 100px">
+							<h:outputText value="#{item.custoVariavelKm}">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Despesas gerais/KM"
+							style="text-align: center; width: 100px">
+							<h:outputText value="#{item.despesaGeralKm}">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Despesa tributária/KM"
+							style="text-align: center; width: 100px">
+							<h:outputText value="#{item.despesaTributariaKm}">
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Custo de pessoal/KM"
+							style="text-align: center; width: 100px">
+							<h:outputText value="#{item.custoPessoalKm}">
+							</h:outputText>
+						</p:column>
+					</p:dataTable>
+				</p:tab>
+
+			</p:tabView>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

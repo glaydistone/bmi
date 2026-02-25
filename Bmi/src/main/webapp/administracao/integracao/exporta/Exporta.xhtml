@@ -1,0 +1,30 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">BMI</ui:define>
+
+	<ui:define name="corpo">
+		<h:form>
+
+			<p:messages autoUpdate="true" />
+			<p:panel columns="6" id="painel" header="Critérios de seleção"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+				<p:outputLabel for="mes" value="Mês referência" />
+				<p:datePicker id="mes" value="#{boletimBean.filtroDataReferencia}" view="month"
+					timeZone="UTC-3"  pattern="MM/yyyy" required="true" requiredMessage="Informe o mês/ano para exportação"
+					yearNavigator="true" />
+				
+					<p:commandButton title="importar" value="Exportar" 
+						action="#{boletimBean.exportar}" icon="pi pi-sign-in"
+						update="@form" />
+
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

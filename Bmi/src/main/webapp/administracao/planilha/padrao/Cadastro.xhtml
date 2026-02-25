@@ -1,0 +1,336 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+			<f:metadata>
+				<o:viewParam name="idStr" value="#{planilhaPrecosBean.idStr}" />
+			</f:metadata>
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						action="#{planilhaPrecosBean.salvar}" update="@form" />
+					<p:commandButton value="Clonar" icon="pi pi-copy"
+						disabled="#{planilhaPrecosBean.planilha.id == null}"
+						action="#{planilhaPrecosBean.clonar}" update="@form" />
+					<p:commandButton value="Atualizar" icon="pi pi-percentage"
+						disabled="#{planilhaPrecosBean.planilha.id == null}"
+						action="#{planilhaPrecosBean.atualizaValores}" update="@form" />
+					<p:button type="button" value="Pesquisar" icon="pi pi-search"
+						outcome="/administracao/planilha/padrao/Pesquisa" />
+				</f:facet>
+			</p:toolbar>
+			<p:panel header="Planilha mensal">
+		    	<p:outputLabel value="#{planilhaPrecosBean.planilha.id}" />
+				<h:panelGrid columns="6" style="width: 100%; margin-top: 20px"
+					columnClasses="rotulo, campo">
+
+					<p:outputLabel value="Mês referência" for="mes" />
+					<p:datePicker value="#{planilhaPrecosBean.planilha.dataReferencia}"
+						required="true"  id="mes" view="month"
+						pattern="MM/yyyy" yearNavigator="true" />
+
+				</h:panelGrid>
+				<p:tabView>
+					<p:tab title="Índices econômicos">
+						<p:panel header="Índices econômicos">
+							<h:panelGrid columns="2" columnClasses="coluna20, coluna80">
+								<p:column>
+									<p:outputLabel value="IPCA" for="ipca" />
+								</p:column>
+								<p:column>
+									<p:inputNumber value="#{planilhaPrecosBean.planilha.ipca}"
+										id="ipca" required="true" decimalPlaces="6" thousandSeparator="." decimalSeparator=","  />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="IGPM" for="despAdm" />
+								</p:column>
+								<p:column>
+									<p:inputNumber value="#{planilhaPrecosBean.planilha.igpm}"
+										id="despAdm" required="true" decimalPlaces="6"  thousandSeparator="." decimalSeparator=","/>
+								</p:column>
+								<p:column>
+									<p:outputLabel value="FGV 1416653 (Peças)" for="tx" />
+								</p:column>
+								<p:column>
+									<p:inputNumber value="#{planilhaPrecosBean.planilha.fgvPecas}"
+										id="tx" required="true" decimalPlaces="6"  thousandSeparator="." decimalSeparator="," title="R$/KM" />
+								</p:column>
+								<p:column>
+									<p:outputLabel value="FGV 1420741 (Rodagem)" for="pe" />
+								</p:column>
+								<p:column>
+									<p:inputNumber
+										value="#{planilhaPrecosBean.planilha.fgvRodagem}" id="pe"
+										required="true" decimalPlaces="6"  thousandSeparator="." decimalSeparator="," title="R$/KM" />
+								</p:column>
+							</h:panelGrid>
+
+						</p:panel>
+					</p:tab>
+					<p:tab title="Materiais">
+						<p:dataTable var="item" rowIndexVar="linha"
+							value="#{planilhaPrecosBean.planilha.precosMaterial}">
+
+
+							<p:column headerText="Categoria"
+								style="width: 100px; vertical-align: middle; margin-left: .5rem"
+								groupRow="true">
+								<h:outputText
+									value="#{item.tipoMaterial.categoriaMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Tipo de material" style="width: 100px">
+								<p:outputLabel value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+
+							<p:column headerText="Preço unitário"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.valor}" decimalPlaces="6"  thousandSeparator="." decimalSeparator="," />
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Pessoal">
+						<p:dataTable var="itemPessoal" rowIndexVar="linhaPes"
+							value="#{planilhaPrecosBean.planilha.planilhaPessoal}">
+							<p:column>
+								<p:panelGrid>
+									<f:facet name="header">
+										<p:row>
+											<p:column colspan="6">
+												<h:outputText value="#{itemPessoal.tipoMovimento}" />
+											</p:column>
+										</p:row>
+										<p:row>
+											<p:column>
+												<p:outputLabel value="Categoria" />
+											</p:column>
+											<p:column>
+												<p:outputLabel value="Salário" />
+											</p:column>
+											<p:column>
+												<p:outputLabel value="Adicionais" />
+											</p:column>
+											<p:column>
+												<p:outputLabel value="Fator de utilização" />
+											</p:column>
+											<p:column>
+												<p:outputLabel value="Vale alimentação" />
+											</p:column>
+											<p:column>
+												<p:outputLabel value="Plano de saúde" />
+											</p:column>
+										</p:row>
+
+									</f:facet>
+
+								</p:panelGrid>
+								<p:panelGrid>
+									<p:row>
+										<p:column>
+											<p:outputLabel value="Motorista" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.salarioMotorista}"  
+												required="true" decimalPlaces="2"   thousandSeparator="." decimalSeparator="," title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.adicionalMotorista}"  
+												required="true" decimalPlaces="2"   thousandSeparator="." decimalSeparator="," title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.fuMotorista}"  
+												required="true" decimalPlaces="4"   thousandSeparator="." decimalSeparator="," title="Pessoa/veículo" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.valeAlimentacao}"  
+												required="true" decimalPlaces="2"   thousandSeparator="." decimalSeparator="," title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.planoSaude}" 
+												required="true" decimalPlaces="2"   thousandSeparator="." decimalSeparator="," title="R$/empregado/mês" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:outputLabel value="Cobrador" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.salarioCobrador}"  
+												required="true" decimalPlaces="2"   thousandSeparator="." decimalSeparator="," title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.adicionalCobrador}"  
+												required="true" decimalPlaces="2"   thousandSeparator="." decimalSeparator="," title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.fuCobrador}" 
+												required="true" decimalPlaces="4"  thousandSeparator="." decimalSeparator=","  title="Pessoa/veículo" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:outputLabel value="Fiscal" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.salarioFiscal}" 
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.adicionalFiscal}"  
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.fuFiscal}"  
+												required="true" decimalPlaces="4"  thousandSeparator="." decimalSeparator=","  title="Pessoa/veículo" />
+										</p:column>
+									</p:row>
+
+									<p:row>
+										<p:column>
+											<p:outputLabel value="Outros" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.salarioOutros}"  
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.adicionalOutros}" 
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.fuOutros}"
+												required="true" decimalPlaces="4"  thousandSeparator="." decimalSeparator=","  title="Pessoa/veículo" />
+										</p:column>
+									</p:row>
+
+
+									<p:row>
+										<p:column>
+											<p:outputLabel value="Pessoal Administrativo" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.salarioAdministracao}"  
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.adicionalAdministracao}" 
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.fuAdministracao}"
+												required="true" decimalPlaces="4"   thousandSeparator="." decimalSeparator="," title="Pessoa/veículo" />
+										</p:column>
+									</p:row>
+									<p:row>
+										<p:column>
+											<p:outputLabel value="Pessoal de manutenção" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.salarioManutencao}" 
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.adicionalManutencao}"
+												required="true" decimalPlaces="2"  thousandSeparator="." decimalSeparator=","  title="R$/empregado/mês" />
+										</p:column>
+										<p:column>
+											<p:inputNumber value="#{itemPessoal.fuManutencao}" 
+												required="true" decimalPlaces="4"   thousandSeparator="." decimalSeparator="," title="Pessoa/veículo" />
+										</p:column>
+									</p:row>
+								</p:panelGrid>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Custos unitários">
+						<p:dataTable var="itemUnitario" rowIndexVar="linhaUnit"
+							value="#{planilhaPrecosBean.planilha.valoresIndexados}">
+							<p:column headerText="Tipo de movimento"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{itemUnitario.tipoMovimento}" />
+							</p:column>
+							<p:column headerText="Despesas administrativas/KM"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15" 
+									value="#{itemUnitario.despesaAdministrativa}"   thousandSeparator="." decimalSeparator="," decimalPlaces="6"/>
+							</p:column>
+							<p:column headerText="Taxas e tributos/KM"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15" value="#{itemUnitario.taxasTributos}" decimalPlaces="6" thousandSeparator="." decimalSeparator="," />
+							</p:column>
+							<p:column headerText="Peças e serviços/KM"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15" value="#{itemUnitario.servicosPecas}" thousandSeparator="." decimalSeparator="," 
+									decimalPlaces="6"/>
+							</p:column>
+							<p:column headerText="Rodagem/KM"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15" value="#{itemUnitario.rodagem}"  thousandSeparator="." decimalSeparator="," decimalPlaces="6"/>
+							</p:column>
+
+							<p:column headerText="Veículo de referência"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15"  
+									value="#{itemUnitario.precoVeiculoReferencia}"   thousandSeparator="." decimalSeparator="," decimalPlaces="6"/>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Frota de apoio">
+						<p:dataTable var="itemFrota" rowIndexVar="linhaFrota"
+							value="#{planilhaPrecosBean.planilha.precosFrotaApoio}">
+							<p:column headerText="Tipo de veiculo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{itemFrota.tipoVeiculoApoio.descricao}" />
+							</p:column>
+
+							<p:column headerText="Custo mínimo"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15" value="#{itemFrota.custoMinimo}" decimalPlaces="6" thousandSeparator="." decimalSeparator="," />
+							</p:column>
+
+							<p:column headerText="Custo máximo"
+								style="text-align: center; width: 100px">
+								<p:inputNumber size="15" value="#{itemFrota.custoMaximo}" decimalPlaces="6" thousandSeparator="." decimalSeparator="," />
+							</p:column>>
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Coeficientes de Consumo">
+						<p:dataTable var="itemConsumo" rowIndexVar="linhaConsumo"
+							sortBy="#{itemConsumo.tipoMovimento.descricao}"
+							value="#{planilhaPrecosBean.planilha.coeficienteConsumo}">
+
+							<p:column headerText="Tipo de Movimento"
+								style="width: 100px; vertical-align: middle; margin-left: .5rem"
+								groupRow="true">
+								<h:outputText value="#{itemConsumo.tipoMovimento.descricao}" />
+							</p:column>
+
+							<p:column headerText="Componente"
+								style="text-align: center; width: 100px">
+								<h:outputText value="#{itemConsumo.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Coeficiente de consumo"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{itemConsumo.coeficiente}"
+									decimalPlaces="6" thousandSeparator="." decimalSeparator="," />
+
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

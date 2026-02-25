@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- disables storage of sessions across restarts --> 
+    <Manager pathname=""/>
+    <Resource name="BeanManager" auth="Container" 
+        type="javax.enterprise.inject.spi.BeanManager" 
+        factory="org.jboss.weld.resources.ManagerObjectFactory"/>
+        
+        
+        <Resource name="jdbc/bmiDB" 
+		auth="Container"
+		type="javax.sql.DataSource" 
+		driverClassName="com.mysql.jdbc.Driver"
+		url="jdbc:mysql://localhost:3306/boletim" 
+		username="boletim"
+		password="bmi"
+		
+		initialSize="5" 
+		maxActive="20" 
+		maxIdle="10" 
+		maxWait="-1"
+		removeAbandoned="true" 
+		validationInterval="34000"
+		validationQuery="SELECT 1" 
+		testOnBorrow="true" 
+		testWhileIdle="true"
+		timeBetweenEvictionRunsMillis="10000"
+		minEvictableIdleTimeMillis="60000" />
+</Context>

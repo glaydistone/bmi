@@ -1,0 +1,115 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+			<f:metadata>
+				<o:viewParam name="idStr" value="#{planilhaIndexadosBean.idStr}" />
+			</f:metadata>
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button type="button" value="Novo" icon="pi pi-plus"
+						outcome="/planilha/valoresIndexados/Cadastro" />
+					<p:commandButton value="Clonar" icon="pi pi-copy"
+						action="#{planilhaIndexadosBean.clonar}" update="@form" />
+					<p:button type="button" value="Pesquisar" icon="pi pi-search"
+						outcome="/planilha/valoresIndexados/Pesquisa" />
+					<span class="ui-separator"> <span
+						class="ui-icon pi pi-ellipsis-v" />
+					</span>
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						action="#{planilhaIndexadosBean.salvar}" update="@form" />
+					<p:commandButton title="Excluir" value="Excluir"
+						disabled="#{planilhaIndexadosBean.planilha.id == null}"
+						action="#{planilhaIndexadosBean.excluir}" icon="pi pi-trash" />
+				</f:facet>
+			</p:toolbar>
+			<p:panel header="Valores indexados">
+				<h:panelGrid columns="2" columnClasses="coluna20, coluna80">
+					<p:column>
+						<p:outputLabel value="Mês referência" for="mes" />
+					</p:column>
+					<p:column>
+						<p:datePicker
+							value="#{planilhaIndexadosBean.planilha.dataReferencia}"
+							required="true" timeZone="UTC-3" id="mes" view="month"
+							pattern="MM/yyyy" yearNavigator="true" />
+					</p:column>
+
+					<p:column>
+						<p:outputLabel value="Tipo de Movimento" for="tipoMovimento" />
+					</p:column>
+					<p:column>
+						<p:selectOneMenu id="tipoMovimento" required="true"
+							value="#{planilhaIndexadosBean.planilha.tipoMovimento}">
+							<f:selectItem itemLabel="Selecione o tipo" />
+							<f:selectItems value="#{principalBean.tiposMovimento}"
+								var="tipoMovimento" itemValue="#{tipoMovimento}"
+								itemLabel="#{tipoMovimento.descricao}" />
+						</p:selectOneMenu>
+					</p:column>
+
+					<p:column>
+						<p:outputLabel value="Despesas administrativas (R$/KM)"
+							for="despAdm" />
+					</p:column>
+					<p:column>
+						<p:inputNumber
+							value="#{planilhaIndexadosBean.planilha.despesaAdministrativa}"
+							id="despAdm" required="true" decimalPlaces="4" />
+					</p:column>
+
+					<p:column>
+						<p:outputLabel value="Taxas e tributos (R$/KM)" for="tx" />
+					</p:column>
+					<p:column>
+						<p:inputNumber
+							value="#{planilhaIndexadosBean.planilha.taxasTributos}" id="tx"
+							required="true" decimalPlaces="4" title="R$/KM" />
+					</p:column>
+
+					<p:column>
+						<p:outputLabel value="Peças e serviços de terceiros (R$/KM)"
+							for="pe" />
+					</p:column>
+					<p:column>
+						<p:inputNumber
+							value="#{planilhaIndexadosBean.planilha.servicosPecas}" id="pe"
+							required="true" decimalPlaces="4" title="R$/KM" />
+					</p:column>
+					
+					<p:column>
+						<p:outputLabel value="Veículo de referência"
+							for="ve" />
+					</p:column>
+					<p:column>
+						<p:inputNumber
+							value="#{planilhaIndexadosBean.planilha.precoVeiculoReferencia}" id="ve"
+							required="true" decimalPlaces="2" />
+					</p:column>
+				</h:panelGrid>
+			</p:panel>
+			<p:panel header="Despesas com frota de apoio">
+				<p:dataTable var="item" rowIndexVar="linha"
+					value="#{planilhaIndexadosBean.planilha.precosFrotaApoio}">
+					<p:column headerText="Tipo de veículo" style="width: 100px">
+						<h:outputText value="#{item.tipoVeiculoApoio.descricao}" />
+					</p:column>
+					<p:column headerText="Custo por quilômetro" style="width: 100px">
+						<p:inputNumber size="15" value="#{item.custoQuilometro}"
+							decimalPlaces="4" thousandSeparator="." decimalSeparator="," symbol="R$ " />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

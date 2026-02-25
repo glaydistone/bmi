@@ -1,0 +1,64 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+			<f:metadata>
+				<o:viewParam name="idStr" value="#{planilhaPrecosBean.idStr}" />
+			</f:metadata>
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button type="button" icon="pi pi-plus" title="incluir"
+						value="Novo" />
+					<p:button type="button" icon="pi pi-search" value="pesquisar"
+						outcome="/planilha/precos/Pesquisa" />
+
+					<span class="ui-separator"> <span
+						class="ui-icon pi pi-ellipsis-v" />
+					</span>
+
+					<p:commandButton icon="pi pi-save" action="#{planilhaPrecosBean.salvar}"
+						value="Salvar" title="salvar" update="@form" />
+					<p:commandButton icon="pi pi-trash" action="#{planilhaPrecosBean.excluir}"
+						value="Excluir" title="excluir" update="@form" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panel header="Preços de materiais" toggleTitle="Parâmetros Gerais">
+				<h:panelGrid columns="4" style="width: 100%; margin-top: 20px"
+					columnClasses="rotulo, campo">
+					<p:outputLabel value="Mês de referência" for="mes" />
+					<p:datePicker id="mes" view="month" pattern="MM/yyyy"
+						required="true" timeZone="UTC-3"
+						value="#{planilhaPreco.planilha.dataReferencia}"
+						yearNavigator="true" />
+				</h:panelGrid>
+				<p:dataTable var="item" rowIndexVar="linha"
+					value="#{planilhaPreco.planilha.precosMaterial}">
+					<p:column headerText="Categoria" style="width: 100px">
+						<h:outputText
+							value="#{item.tipoMaterial.categoriaMaterial.descricao}" />
+					</p:column>
+					<p:column headerText="Tipo de material" style="width: 100px">
+						<p:outputLabel value="#{item.tipoMaterial.descricao}" />
+					</p:column>
+
+					<p:column headerText="Preço unitário"
+						style="text-align: center; width: 100px">
+						<p:inputNumber size="15" value="#{item.valor}" decimalPlaces="4"
+							thousandSeparator="." decimalSeparator="," symbol="R$ " />
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

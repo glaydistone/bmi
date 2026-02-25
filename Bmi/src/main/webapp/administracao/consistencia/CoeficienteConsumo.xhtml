@@ -1,0 +1,93 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+	<p:dataTable id="listaCoeficiente" var="item" value="#{boletimBean.boletins}" rowKey="#{item.id}"
+		size="small" emptyMessage="Boletim não encontrado" paginator="true" selectionMode="single"
+		rows="15" scrollable="true" scrollHeight="350" style="font-size: 10px" onRowClick=""
+		paginatorAlwaysVisible="false">
+		<p:column headerText="Empresa"
+			style="text-align: center; width: 250px">
+			<h:outputText value="#{item.empresa.razaoSocial}" />
+		</p:column>
+		<p:column headerText="Motorista (pessoa/veículo)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoMotorista.fatorUtilizacao}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="4" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Cobrador (pessoa/veículo)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoCobrador.fatorUtilizacao}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="4" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Fiscal (pessoa/veículo)" style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoFiscal.fatorUtilizacao}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="4" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Outros operação (pessoa/veículo)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOperacao.fatorUtilizacao}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="4" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Manutenção (pessoa/veículo)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoManutencao.fatorUtilizacao}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="4" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Administração (pessoa/veículo)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoAdministracao.fatorUtilizacao}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="4" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Combustível (litros/Km)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoCombustivel.indiceConsumo}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Graxa (Quilos/Km)" style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoGraxa.indiceConsumo}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Óleo de caixa (litros/Km)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOleoCaixa.indiceConsumo}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Óleo de diferencial (litros/Km)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOleoDiferencial.indiceConsumo}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Fluido de freio (litros/Km)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoFreio.indiceConsumo}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Óleo de motor (litros/Km)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOleoMotor.indiceConsumo}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+
+	</p:dataTable>
+
+</ui:composition>
+
+

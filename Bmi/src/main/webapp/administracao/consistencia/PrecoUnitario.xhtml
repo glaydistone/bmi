@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+
+	<p:dataTable id="listaPreco" var="item" value="#{boletimBean.boletins}" selectionMode="single"
+		size="small" emptyMessage="Boletim não encontrado" paginator="true" rowKey="#{item.id}"
+		rows="15" scrollable="true" scrollHeight="350" style="font-size: 10px"
+		paginatorAlwaysVisible="false">
+		<p:column headerText="Empresa"
+			style="text-align: center; width: 250px">
+			<h:outputText value="#{item.empresa.razaoSocial}" />
+		</p:column>
+		<p:column headerText="Salário Motorista (R$/pessoa/mês)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoMotorista.salarioMedio}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Salário Cobrador (R$/pessoa/mês)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoCobrador.salarioMedio}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Salário Fiscal (R$/pessoa/mês)" style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoFiscal.salarioMedio}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Remuneração Outros operação (R$/pessoa/mês)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOperacao.remuneracaoMedia}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Remuneração Manutenção (R$/pessoa/mês)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoManutencao.remuneracaoMedia}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Remuneração Administração (R$/pessoa/mês)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoAdministracao.remuneracaoMedia}">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Combustível (R$/litro)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoCombustivel.preco}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Graxa (R$/quilo)" style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoGraxa.preco}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Óleo de caixa (R$/litro)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOleoCaixa.preco}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Óleo de diferencial (R$/litro)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOleoDiferencial.preco}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Fluido de freio (R$/litro)"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoFreio.preco}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Óleo de motor"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoOleoMotor.preco}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+
+		<p:column headerText="Rodagem" style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoRodagem}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Peças" style="text-align: center; width: 80px">
+			<p:outputLabel value="#{item.custoPecas.custoQuilometro}">
+				<f:convertNumber maxFractionDigits="6" minFractionDigits="6" />
+			</p:outputLabel>
+		</p:column>
+		<p:column headerText="Despesas"
+			style="text-align: center; width: 80px">
+			<p:outputLabel value="0">
+				<f:convertNumber maxFractionDigits="2" minFractionDigits="2" />
+			</p:outputLabel>
+		</p:column>
+	</p:dataTable>
+
+</ui:composition>
+
+

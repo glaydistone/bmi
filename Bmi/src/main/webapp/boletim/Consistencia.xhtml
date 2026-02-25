@@ -1,0 +1,1092 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form id="form">
+			<f:metadata>
+				<o:viewParam name="idStr" value="#{boletimBean.idStr}" />
+				<o:viewParam name="modo" value="#{boletimBean.modo}" />
+			</f:metadata>
+			<p:growl id="messages" autoUpdate="true" />
+
+
+			<p:toolbar id="barra">
+				<f:facet name="left">
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						disabled="#{boletimBean.boletim.bloqueado}"
+						action="#{boletimBean.salvarEconsistir}" update="@form" />
+
+
+					<p:button type="button" value="Pesquisar" icon="pi pi-search"
+						outcome="/boletim/Pesquisa" />
+
+					<p:commandButton value="Clonar" icon="pi pi-copy"
+						disabled="#{boletimBean.boletim.id == null}"
+						action="#{boletimBean.clonar}"
+						rendered="#{seguranca.administrador}" update="@form" />
+
+					<p:commandButton value="Bloquear/Desbloquear" icon="pi pi-lock"
+						disabled="#{boletimBean.boletim.id == null}"
+						action="#{boletimBean.bloquear}"
+						rendered="#{seguranca.administrador}" update="@form" />
+
+				</f:facet>
+			</p:toolbar>
+			<h:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+				columnClasses="rotulo, campo">
+				<p:outputLabel value="#{boletimBean.boletim.id}" />
+				<p:outputLabel
+					value="Bloqueado pelo administrador. Não pode ser alterado."
+					rendered="#{boletimBean.boletim.bloqueado}" style="color:red" />
+				<p:outputLabel value=""
+					rendered="#{not boletimBean.boletim.bloqueado}" />
+				<p:outputLabel value="Empresa" />
+				<p:outputLabel value="#{boletimBean.boletim.empresa.razaoSocial}" />
+
+
+				<p:outputLabel value="Tipo de Movimento" />
+				<p:outputLabel
+					value="#{boletimBean.boletim.tipoMovimento.descricao}" />
+
+
+				<p:outputLabel value="Mês referência" />
+
+
+				<p:datePicker value="#{boletimBean.boletim.dataReferencia}"
+					required="true" emptyValue="zero"
+					disabled="#{!seguranca.administrador}" id="mes" view="month"
+					pattern="MM/yyyy" yearNavigator="true" />
+
+				<p:outputLabel value="Digitação concluída" />
+				<p:selectBooleanCheckbox readonly="#{boletimBean.boletim.bloqueado}"
+					value="#{boletimBean.boletim.digitacaoConcluida}" />
+
+			</h:panelGrid>
+
+			<p:panel header="Dados operacionais">
+				<h:panelGrid border="0" columns="2"
+					style="width: 100%;  margin-top: 20px">
+					<p:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+						columnClasses="rotulo, campo">
+						<p:outputLabel value="Frota efetiva" for="frtEfetiva" />
+						<p:inputNumber value="#{boletimBean.boletim.frotaEfetiva}"
+							required="true" emptyValue="zero"
+							readonly="#{boletimBean.boletim.bloqueado}" id="frtEfetiva">
+							<p:ajax event="change" process="@this"
+								update="tabDados:tblOperacao tabDados:comparaAdm tabDados:comparaManutencao  tabDados:comparaOutros  tabDados:comparaPecas" />
+
+						</p:inputNumber>
+						<p:outputLabel value="Frota reserva" for="frtReserva" />
+						<p:inputNumber value="#{boletimBean.boletim.frotaReserva}"
+							required="true" emptyValue="zero"
+							readonly="#{boletimBean.boletim.bloqueado}" id="frtReserva" />
+					</p:panelGrid>
+					<p:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+						columnClasses="rotulo, campo">
+
+						<p:outputLabel value="Quilometragem Piso I" />
+
+						<p:inputNumber value="#{boletimBean.boletim.quilometragem_piso1}"
+							required="true" emptyValue="zero"
+							readonly="#{boletimBean.boletim.bloqueado}" decimalPlaces="3"
+							decimalSeparator="," thousandSeparator=".">
+							<p:ajax event="change" process="@this"
+								update="tabDados:tblCombusLubrif tabDados:comparaRodagem tabDados:comparaDesp  tabDados:comparaTrib  tabDados:comparaPecas" />
+						</p:inputNumber>
+						<p:outputLabel value="Quilometragem Piso II" />
+						<p:inputNumber value="#{boletimBean.boletim.quilometragem_piso2}"
+							required="true" emptyValue="zero"
+							readonly="#{boletimBean.boletim.bloqueado}" decimalPlaces="3"
+							decimalSeparator="," thousandSeparator=".">
+							<p:ajax event="change" process="@this"
+								update="tabDados:tblCombusLubrif tabDados:comparaRodagem tabDados:comparaDesp  tabDados:comparaTrib tabDados:comparaPecas" />
+						</p:inputNumber>
+						<p:outputLabel value="Quilometragem Piso III" />
+						<p:inputNumber value="#{boletimBean.boletim.quilometragem_piso3}"
+							required="true" emptyValue="zero"
+							readonly="#{boletimBean.boletim.bloqueado}" decimalPlaces="3"
+							decimalSeparator="," thousandSeparator=".">
+							<p:ajax event="change" process="@this"
+								update="tabDados:tblCombusLubrif tabDados:comparaRodagem tabDados:comparaDesp  tabDados:comparaTrib tabDados:comparaPecas" />
+						</p:inputNumber>
+					</p:panelGrid>
+
+				</h:panelGrid>
+			</p:panel>
+			<p:panel header="Custos">
+				<p:tabView id="tabDados">
+
+					<p:tab title="Combust.lubrif.">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparCombustivelLubrificante}"
+							update="tabDados:tblCombusLubrif" />
+
+						<p:dataTable value="#{boletimBean.boletim.combusLubrif}"
+							id="tblCombusLubrif" var="item" rowIndexVar="linha">
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Quantidade"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.quantidade}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this" update="tblCombusLubrif" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this" update="tblCombusLubrif" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Preço unitário"
+								style="text-align: center; width: 100px; #{(item.diferencaPreco gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaPreco gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.preco}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="4"
+										minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preço unitário do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.limitePrecoPlanilha}" />
+								<!-- 
+								<p:outputLabel value="#{item.precoPlanilha}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="4" minFractionDigits="4" />
+									
+								</p:outputLabel>
+								 -->
+							</p:column>
+							<p:column headerText="Índice de consumo"
+								style="text-align: center; width: 100px; #{(item.diferencaIndice gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaIndice gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.indiceConsumo}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+										minFractionDigits="6" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Índice de consumo do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.limiteConsumoPlanilha}" />
+							</p:column>
+							<p:column headerText="Custo por quilômetro"
+								style="text-align: center; width: 100px; #{(item.diferencaCusto gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaCusto gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.custoQuilometro}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="4"
+										minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Custo por quilômetro do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.limiteCustoPlanilha}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</p:tab>
+
+					<p:tab title="Peças/acessórios">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparServicos}"
+							update="tabDados:tblPecas tabDados:tblPecasServico form:tabDados:comparaPecas" />
+						<p:panelGrid id="comparaPecas">
+
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaPecas gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaPecas gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.custoPecasKm}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.limiteCustoPecasSistema}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:dataTable value="#{boletimBean.boletim.servicos}" var="item"
+							id="tblPecas" rowIndexVar="linha">
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoServico.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaPecas" />
+								</p:inputNumber>
+							</p:column>
+
+						</p:dataTable>
+
+						<p:dataTable value="#{boletimBean.boletim.pecasServicos}"
+							id="tblPecasServico" var="item" rowIndexVar="linha">
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaPecas" />
+								</p:inputNumber>
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Rodagem">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparRodagem}"
+							update="tabDados:tblRodagem tabDados:comparaRodagem" />
+						<p:panelGrid id="comparaRodagem">
+
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaRodagem gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaRodagem gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.custoRodagemKm}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.limiteRodagemSistema}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<p:dataTable value="#{boletimBean.boletim.rodagem}" var="item"
+							id="tblRodagem" rowIndexVar="linha">
+
+
+							<p:column headerText="tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoMaterial.descricao}" />
+							</p:column>
+							<p:column headerText="Quantidade"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.quantidade}" decimalPlaces="0"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaRodagem tblRodagem" />
+								</p:inputNumber>
+
+							</p:column>
+
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaRodagem tblRodagem" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Preço unitário"
+								style="text-align: center; width: 100px; #{(item.preco == 0) ? '': (item.diferencaPreco gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaPreco gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.preco}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preço unitário do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.precoPlanilha}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Despesas gerais">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparDespesasAdm}"
+							update="tabDados:tblDespesas tabDados:comparaDesp" />
+						<p:panelGrid id="comparaDesp">
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaDespesas gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaDespesas gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.despesasKm}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.limiteDespesasSistema}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+
+						<p:dataTable value="#{boletimBean.boletim.despesasAdm}" var="item"
+							id="tblDespesas" rowIndexVar="linha">
+
+							<p:column headerText="Classe"
+								style="text-align: left; width: 40px">
+								<h:outputText
+									value="#{item.tipoDespesa.categoriaDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaDesp tblDespesas" />
+								</p:inputNumber>
+
+							</p:column>
+							<p:column headerText="Descrição"
+								style="text-align: center; width: 160px">
+								<p:inputText value="#{item.descricao}" size="80" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Tributos">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparTributos}"
+							update="tabDados:tblTrib tabDados:comparaTrib" />
+						<p:panelGrid id="comparaTrib">
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro empresa" />
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaTributos gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaTributos gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.custoTributosKm}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel value="Custo por quilômetro sistema" />
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.limiteTributosSistema}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<p:dataTable value="#{boletimBean.boletim.tributos}" var="item"
+							id="tblTrib" rowIndexVar="linha">
+
+
+							<p:column headerText="Classe"
+								style="text-align: left; width: 40px">
+								<h:outputText
+									value="#{item.tipoDespesa.categoriaDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoDespesa.descricao}" />
+							</p:column>
+
+
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaTrib tblTrib" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Descrição"
+								style="text-align: center; width: 160px">
+								<p:inputText value="#{item.descricao}" size="80" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Pessoal admin.">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparPessoalAdm}"
+							update="tabDados:tblAdm tabDados:comparaAdm" />
+						<p:panelGrid id="comparaAdm">
+							<f:facet name="header">
+								<p:row>
+									<p:column>FU</p:column>
+									<p:column>FU planilha</p:column>
+									<p:column>Remuneração empresa</p:column>
+									<p:column>Remuneração planilha</p:column>
+								</p:row>
+							</f:facet>
+							<p:row>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaFuAdm gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaFuAdm gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.fuAdministracao}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoAdministracao.fatorUtilizacaoPlanilha}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaRemuneraAdm gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaRemuneraAdm gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel
+										value="#{boletimBean.boletim.remuneraAdministracao}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<!-- 
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoAdministracao.remuneracaoMediaPlanilha}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</p:outputLabel>
+ -->
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoAdministracao.limiteRemuneracaoPlanilha}" />
+
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaEncargosAdm gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaEncargosAdm gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel
+										value="#{boletimBean.boletim.taxaEncargosAdministracao}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" type="percent" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoAdministracao.taxaEncargosPlanilha}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" type="percent" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<p:dataTable value="#{boletimBean.boletim.pessoalAdministrativo}"
+							var="item" rowIndexVar="linha" id="tblAdm">
+
+							<p:column headerText="Cargo"
+								style="text-align: center; width: 200px">
+								<p:outputLabel value="#{item.cargo.descricao}" />
+							</p:column>
+
+							<p:column headerText="Elementos"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.elementos}" decimalPlaces="0"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaAdm tblAdm" />
+								</p:inputNumber>
+							</p:column>
+
+							<p:column headerText="Salários"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.salarios}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaAdm tblAdm" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Prêmios"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.premios}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaAdm tblAdm" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Horas extras"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.horasExtras}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaAdm tblAdm" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Outros"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.outrosPagamentos}"
+									decimalPlaces="2" decimalSeparator="," thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaAdm tblAdm" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Remuneração"
+								style="text-align: center; width: 100px">
+								<p:outputLabel
+									value="#{item.outrosPagamentos+item.horasExtras+item.premios+item.salarios}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="Encargos"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.encargosSociais}" decimalPlaces="2"
+									decimalSeparator="," thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaAdm tblAdm" />
+								</p:inputNumber>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Pessoal manutenção">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparPessoalMan}"
+							update="tabDados:tblManutencao tabDados:comparaManutencao" />
+						<p:panelGrid id="comparaManutencao">
+							<f:facet name="header">
+								<p:row>
+									<p:column>FU</p:column>
+									<p:column>FU planilha</p:column>
+									<p:column>Remuneração empresa</p:column>
+									<p:column>Remuneração planilha</p:column>
+								</p:row>
+							</f:facet>
+							<p:row>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaFuManutencao gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaFuManutencao gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.fuManutencao}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoManutencao.fatorUtilizacaoPlanilha}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaRemuneraManutencao gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaRemuneraManutencao gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel
+										value="#{boletimBean.boletim.remuneraManutencao}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoManutencao.limiteRemuneracaoPlanilha}" />
+
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<p:dataTable value="#{boletimBean.boletim.pessoalManutencao}"
+							id="tblManutencao" var="item" rowIndexVar="linha">
+
+							<p:column headerText="Cargo"
+								style="text-align: center; width: 200px">
+								<p:outputLabel value="#{item.cargo.descricao}" />
+							</p:column>
+
+							<p:column headerText="Elementos"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.elementos}" decimalPlaces="0"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaManutencao tblManutencao" />
+								</p:inputNumber>
+							</p:column>
+
+							<p:column headerText="Salários"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.salarios}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaManutencao tblManutencao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Prêmios"
+								style="text-align: center; width: 100px">
+
+								<p:inputNumber value="#{item.premios}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaManutencao tblManutencao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Horas extras"
+								style="text-align: center; width: 100px">
+
+								<p:inputNumber value="#{item.horasExtras}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaManutencao tblManutencao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Outros"
+								style="text-align: center; width: 100px">
+
+								<p:inputNumber value="#{item.outrosPagamentos}" required="true"
+									emptyValue="zero" decimalPlaces="2" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaManutencao tblManutencao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Remuneração"
+								style="text-align: center; width: 100px">
+								<p:outputLabel
+									value="#{item.outrosPagamentos+item.horasExtras+item.premios+item.salarios}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Encargos"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.encargosSociais}" decimalPlaces="2"
+									decimalSeparator="," thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaManutencao tblManutencao" />
+								</p:inputNumber>
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Pessoal Operação">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparPessoalOpera}"
+							update="tabDados:tblOperacao" />
+						<p:dataTable value="#{boletimBean.boletim.pessoalOperacao}"
+							id="tblOperacao" var="item" rowIndexVar="linha">
+
+							<p:column headerText="Cargo"
+								style="text-align: left; width: 130px">
+								<p:outputLabel value="#{item.cargo.descricao}" />
+							</p:column>
+
+							<p:column headerText="Elementos"
+								style="text-align: center; width: 40px">
+								<p:inputNumber value="#{item.elementos}" decimalPlaces="0"
+									required="true" emptyValue="zero" size="3">
+									<p:ajax event="change" process="@this" update="tblOperacao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="FU"
+								style="text-align: center; width: 30px; #{(item.diferencaFU gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaFU gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.fatorUtilizacao}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="4"
+										minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="FU Planilha"
+								style="text-align: center; width: 30px">
+								<p:outputLabel value="#{item.fatorUtilizacaoPlanilha}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="4"
+										minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Salários" style="text-align: center">
+								<p:inputNumber value="#{item.salarios}" decimalPlaces="2"
+									required="true" emptyValue="zero" size="12"
+									decimalSeparator="," thousandSeparator=".">
+									<p:ajax event="change" process="@this" update="tblOperacao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Sal. Médio"
+								style="text-align: center; width: 60px; #{(item.salarioMedioPlanilha gt item.salarioMedio ) ? 'background-color: #F6CED8' : (item.diferencaSalario gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaSalario gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.salarioMedio}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Salário Planilha"
+								style="text-align: center; width: 60px">
+								<p:outputLabel value="#{item.salarioMedioPlanilha}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+
+							<p:column headerText="Prêmios" style="text-align: center">
+								<p:inputNumber value="#{item.premios}" decimalSeparator=","
+									required="true" emptyValue="zero" thousandSeparator="."
+									decimalPlaces="2" size="12">
+									<p:ajax event="change" process="@this" update="tblOperacao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Horas extras" style="text-align: center">
+								<p:inputNumber value="#{item.horasExtras}" decimalSeparator=","
+									required="true" emptyValue="zero" thousandSeparator="."
+									decimalPlaces="2" size="12">
+									<p:ajax event="change" process="@this" update="tblOperacao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Outros" style="text-align: center">
+								<p:inputNumber value="#{item.outrosPagamentos}" required="true"
+									emptyValue="zero" decimalPlaces="2" size="12"
+									decimalSeparator="," thousandSeparator=".">
+									<p:ajax event="change" process="@this" update="tblOperacao" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Rem. Média"
+								style="text-align: center; width: 50px; #{(item.diferencaRemunera gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaRemunera gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel value="#{item.remuneracaoMedia}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Rem. Planilha"
+								style="text-align: center; width: 60px">
+								<!--  
+								<p:outputLabel value="#{item.remuneracaoMediaPlanilha}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+								-->
+								<p:outputLabel value="#{item.limiteRemuneracaoPlanilha}" />
+							</p:column>
+							<p:column headerText="Remuneração total"
+								style="text-align: center; width: 60px">
+								<p:outputLabel
+									value="#{item.outrosPagamentos+item.horasExtras+item.premios+item.salarios}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Encargos" style="text-align: center">
+								<p:inputNumber value="#{item.encargosSociais}" required="true"
+									emptyValue="zero" decimalSeparator="," thousandSeparator="."
+									decimalPlaces="2" size="12">
+									<p:ajax event="change" process="@this" update="tblOperacao" />
+								</p:inputNumber>
+							</p:column>
+
+
+						</p:dataTable>
+					</p:tab>
+
+					<p:tab title="Outros operação">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparPessoalOutros}"
+							update="tabDados:tbloutros tabDados:comparaOutros" />
+						<p:panelGrid id="comparaOutros">
+							<f:facet name="header">
+								<p:row>
+									<p:column>FU</p:column>
+									<p:column>FU planilha</p:column>
+									<p:column>Remuneração empresa</p:column>
+									<p:column>Remuneração planilha</p:column>
+								</p:row>
+							</f:facet>
+							<p:row>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaFuOutrosOperacao gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaFuOutrosOperacao gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel id="fuOutros"
+										value="#{boletimBean.boletim.fuOutros}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoOperacao.fatorUtilizacaoPlanilha}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="6"
+											minFractionDigits="6" />
+									</p:outputLabel>
+								</p:column>
+								<p:column
+									style="#{(boletimBean.boletim.diferencaRemuneraOutros gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaRemuneraOutros gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel value="#{boletimBean.boletim.remuneraOutros}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoOperacao.limiteRemuneracaoPlanilha}" />
+								</p:column>
+
+								<p:column
+									style="#{(boletimBean.boletim.diferencaEncargosOutros gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaEncargosOutros gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+									<p:outputLabel
+										value="#{boletimBean.boletim.taxaEncargosOutros}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" type="percent" />
+									</p:outputLabel>
+								</p:column>
+								<p:column>
+									<p:outputLabel
+										value="#{boletimBean.boletim.custoOperacao.taxaEncargosPlanilha}">
+										<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+											minFractionDigits="2" type="percent" />
+									</p:outputLabel>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+						<p:dataTable value="#{boletimBean.boletim.pessoalOutros}"
+							var="item" id="tbloutros" rowIndexVar="linha">
+
+							<p:column headerText="Cargo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.cargo.descricao}" />
+							</p:column>
+
+							<p:column headerText="Elementos"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.elementos}" decimalPlaces="0"
+									required="true" emptyValue="zero" thousandSeparator="">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaOutros tbloutros" />
+								</p:inputNumber>
+							</p:column>
+
+							<p:column headerText="Salários"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.salarios}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaOutros tbloutros" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Prêmios"
+								style="text-align: center; width: 100px">
+
+								<p:inputNumber value="#{item.premios}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaOutros tbloutros" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Horas extras"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.horasExtras}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaOutros tbloutros" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Outros"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.outrosPagamentos}" required="true"
+									emptyValue="zero" decimalPlaces="2" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaOutros tbloutros" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Remuneração"
+								style="text-align: center; width: 100px">
+								<p:outputLabel
+									value="#{item.outrosPagamentos+item.horasExtras+item.premios+item.salarios}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Encargos"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.encargosSociais}" decimalPlaces="2"
+									decimalSeparator="," thousandSeparator=".">
+									<p:ajax event="change" process="@this"
+										update="form:tabDados:comparaOutros tbloutros" />
+								</p:inputNumber>
+							</p:column>
+						</p:dataTable>
+					</p:tab>
+
+
+					<p:tab title="V.alimentação/Plano saúde">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparValePlano}" update="tabDados:tblVale" />
+						<p:dataTable value="#{boletimBean.boletim.valePlano}" id="tblVale"
+							var="item" rowIndexVar="lin">
+
+							<p:column headerText="Tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoDespesa.descricao}" />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator=".">
+									<p:ajax event="change" process="@this" update="tblVale" />
+								</p:inputNumber>
+							</p:column>
+							<p:column headerText="Quantidade"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{boletimBean.boletim.elementos}">
+									<f:convertNumber locale="pt_BR" type="number" />
+								</p:outputLabel>
+							</p:column>
+							<p:column headerText="Preco Unitário"
+								style="text-align: center; width: 100px; #{(item.diferencaValor gt 0.1 ) ? 'background-color: #F6CED8' :  (item.diferencaValor gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
+								<p:outputLabel rendered="#{boletimBean.boletim.elementos gt 0}"
+									value="#{item.valor/boletimBean.boletim.elementos}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+
+							</p:column>
+
+							<p:column headerText="Preço unitário do sistema"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.limitePlanilha}" />
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Frota apoio">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparFrotaApoio}"
+							update="tabDados:tblFrotaApoio" />
+						<p:dataTable value="#{boletimBean.boletim.frotasApoio}" var="item"
+							rowIndexVar="linha" id="tblFrotaApoio">
+
+							<p:column headerText="tipo"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.tipoVeiculoApoio.descricao}" />
+							</p:column>
+							<p:column headerText="Quilometragem">
+								<p:inputNumber value="#{item.quilometragem}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator="." />
+							</p:column>
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 100px">
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator="." />
+							</p:column>
+							<p:column headerText="Custo por quilômetro"
+								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.custoQuilometro}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="4"
+										minFractionDigits="4" />
+								</p:outputLabel>
+							</p:column>
+
+
+						</p:dataTable>
+					</p:tab>
+					<p:tab title="Imobilizado">
+						<p:commandButton title="limpar" icon="pi pi-eraser"
+							value="Limpar dados" disabled="#{boletimBean.boletim.bloqueado}"
+							action="#{boletimBean.limparImobilizado}"
+							update="tabDados:tblImob" />
+						<p:dataTable value="#{boletimBean.boletim.receitasImobilizado}"
+							var="item" rowIndexVar="linha" editable="true" id="tblImob">
+
+							<p:column headerText="Tipo" style="text-align: left; width: 90px">
+								<h:outputText value="#{item.tipoReceitaImobilizado.descricao}" />
+							</p:column>
+
+
+							<p:column headerText="Valor total"
+								style="text-align: center; width: 40px">
+
+								<p:inputNumber value="#{item.valor}" decimalPlaces="2"
+									required="true" emptyValue="zero" decimalSeparator=","
+									thousandSeparator="." />
+
+							</p:column>
+							<p:column headerText="Descrição"
+								style="text-align: center; width: 160px">
+
+								<p:inputText value="#{item.descricao}" size="80" />
+
+							</p:column>
+
+						</p:dataTable>
+					</p:tab>
+				</p:tabView>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

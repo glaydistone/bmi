@@ -1,0 +1,81 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+			<f:metadata>
+				<o:viewParam name="idStr" value="#{usuarioBean.idStr}" />
+			</f:metadata>
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button type="button" value="Novo" icon="pi pi-plus"
+						outcome="/seguranca/usuario/Cadastro" />
+					<p:button type="button" value="Pesquisar" icon="pi pi-search"
+						outcome="/seguranca/usuario/Pesquisa" />
+
+					<span class="ui-separator"> <span
+						class="ui-icon pi pi-ellipsis-v" />
+					</span>
+
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						action="#{usuarioBean.salvar}" update="@form" />
+					<p:commandButton type="button" title="Excluir" value="Excluir"
+						disabled="#{usuarioBean.usuario.id == null}" icon="pi pi-trash" />
+				</f:facet>
+			</p:toolbar>
+			<p:panel header="Cadastro de Usuários"
+				toggleTitle="Cadastro de Usuários">
+				<h:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+					columnClasses="rotulo, campo">
+
+					<p:outputLabel value="Nome" for="nome" />
+					<p:inputText id="nome" value="#{usuarioBean.usuario.nome}"
+						required="true" size="80" />
+
+					<p:outputLabel value="Login" for="login" />
+					<p:inputText id="login" value="#{usuarioBean.usuario.login}"
+						required="true" size="20" />
+
+					<p:outputLabel value="Senha" for="senha" />
+					<p:inputText id="senha" value="#{usuarioBean.usuario.senha}"
+						required="true" maxlength="8" />
+
+					<p:outputLabel value="Empresa" for="emp" />
+					<p:selectOneMenu id="emp" value="#{usuarioBean.usuario.empresa}">
+						<f:selectItem itemLabel="Selecione a empresa" />
+						<f:selectItems value="#{principalBean.listaEmpresa}"
+							var="filtroEmp" itemValue="#{filtroEmp}"
+							itemLabel="#{filtroEmp.razaoSocial}" />
+					</p:selectOneMenu>
+
+				</h:panelGrid>
+			</p:panel>
+			<p:panel>
+				<p:dataTable var="item" rowIndexVar="linha"
+					value="#{usuarioBean.usuario.grupos}">
+					<p:column headerText="Grupo"
+						style="width: 100px; vertical-align: middle; margin-left: .5rem"
+						groupRow="true">
+						<h:outputText value="#{item.nome}" />
+						<p:selectOneMenu id="grp" value="#{item}">
+						
+							<f:selectItem itemLabel="Selecione o grupo" />
+							
+							<f:selectItems value="#{principalBean.listaGrupo}" var="grupo"
+								itemValue="#{grupo}" itemLabel="#{grupo.nome}" />
+						</p:selectOneMenu>
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

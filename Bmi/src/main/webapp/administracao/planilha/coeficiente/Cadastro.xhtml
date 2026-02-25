@@ -1,0 +1,111 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar" 
+					    disabled="#{planilhaCoeficienteBean.coeficiente.coeficiente == null}"
+						action="#{planilhaCoeficienteBean.salvar}" update="@form" />
+					<p:commandButton title="Pesquisar" icon="pi pi-save"
+						value="Pesquisar" action="#{planilhaCoeficienteBean.pesquisar}"
+						update="@form" />
+				</f:facet>
+			</p:toolbar>
+			<p:panel header="Coeficientes de consumo">
+				<h:panelGrid columns="2" columnClasses="coluna20, coluna80">
+					<p:column>
+						<p:outputLabel value="Tipo de Movimento" for="tipoMovimento"/>
+					</p:column>
+					<p:column>
+						<p:selectOneMenu id="tipoMovimento" required="true"
+							value="#{planilhaCoeficienteBean.filtroTipoMovimento}">
+							<f:selectItem itemLabel="Selecione o tipo" />
+							<f:selectItems value="#{principalBean.tiposMovimento}"
+								var="tipoMovimento" itemValue="#{tipoMovimento}"
+								itemLabel="#{tipoMovimento.descricao}" />
+						</p:selectOneMenu>
+					</p:column>
+					<p:column>
+						<p:outputLabel value="Categoria" />
+					</p:column>
+					<p:column>
+						<h:outputText
+							value="#{planilhaCoeficienteBean.coeficiente.tipoMaterial.categoriaMaterial.descricao}"
+							rendered="#{planilhaCoeficienteBean.coeficiente.categoriaMaterial.descricao == null}" />
+						<h:outputText
+							value="#{planilhaCoeficienteBean.coeficiente.categoriaMaterial.descricao}"
+							rendered="#{planilhaCoeficienteBean.coeficiente.categoriaMaterial != null}" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="Material" for="mt" />
+					</p:column>
+					<p:column>
+						<p:outputLabel
+							value="#{planilhaCoeficienteBean.coeficiente.tipoMaterial.descricao}"
+							id="mt" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="Coeficiente" for="coef" />
+					</p:column>
+					<p:column>
+						<p:inputNumber
+							value="#{planilhaCoeficienteBean.coeficiente.coeficiente}"
+							id="coef" decimalPlaces="6" />
+					</p:column>
+				</h:panelGrid>
+
+			</p:panel>
+			<p:panel>
+				<p:dataTable var="item" rowIndexVar="linha"
+					value="#{planilhaCoeficienteBean.coeficientes}">
+
+					<p:column headerText="Tipo de Movimento"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.tipoMovimento.descricao}" />
+					</p:column>
+
+					<p:column headerText="Categoria"
+						style="text-align: center; width: 100px">
+						<h:outputText
+							value="#{item.tipoMaterial.categoriaMaterial.descricao}"
+							rendered="#{item.categoriaMaterial == null}" />
+						<h:outputText value="#{item.categoriaMaterial.descricao}"
+							rendered="#{item.categoriaMaterial != null}" />
+					</p:column>
+
+					<p:column headerText="Componente"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.tipoMaterial.descricao}" />
+					</p:column>
+					<p:column headerText="coeficiente"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.coeficiente}">
+							<f:convertNumber pattern="#0.000000" />
+						</h:outputText>
+					</p:column>
+
+					<p:column style="width: 10px; text-align: center">
+						<p:commandButton icon="ui-icon-pencil" title="Editar"
+							update="@form" process="@this">
+							<f:setPropertyActionListener value="#{item}"
+								target="#{planilhaCoeficienteBean.coeficiente}" />
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

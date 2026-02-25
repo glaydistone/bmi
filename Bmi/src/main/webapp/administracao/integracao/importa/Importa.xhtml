@@ -1,0 +1,35 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">BMI</ui:define>
+
+	<ui:define name="corpo">
+		<h:form enctype="multipart/form-data">
+			<p:growl id="messages" autoUpdate="true" showDetail="true" />
+
+
+			<p:panel header="Arquivo para importação"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+				<h:panelGrid columns="1" id="painel"
+					header="Arquivo para importação"
+					style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+
+					<p:outputLabel for="upload" value="Arquivo" />
+					<p:fileUpload id="upload" value="#{boletimBean.arquivo}"
+						label="Selecione" required="true" mode="simple" />
+
+
+					<p:commandButton title="importar" value="Importar"
+						action="#{boletimBean.importar}" icon="pi pi-sign-in" ajax="false" />
+
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

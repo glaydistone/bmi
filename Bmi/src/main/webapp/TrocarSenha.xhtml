@@ -1,0 +1,42 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						action="#{usuarioBean.trocarSenha}" update="@form" />
+				</f:facet>
+			</p:toolbar>
+			<p:panel header="Trocar de senha" toggleTitle="Cadastro de Usuários">
+				<h:panelGrid columns="2" style="width: 100%; margin-top: 20px"
+					columnClasses="rotulo, campo">
+
+					<p:outputLabel value="Nome" />
+					<p:outputLabel id="nome" value="#{seguranca.usuario.nome}" />
+
+					<p:outputLabel value="Nova senha" for="senha" />
+					<p:inputText id="senha" value="#{usuarioBean.usuario.novaSenha}"
+						required="true" maxlength="8" />
+
+
+					<p:outputLabel value="Redigite a senha" for="redigiteSenha" />
+					<p:inputText id="redigiteSenha" value="#{usuarioBean.usuario.redigiteSenha}"
+						required="true" maxlength="8" />
+
+
+				</h:panelGrid>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

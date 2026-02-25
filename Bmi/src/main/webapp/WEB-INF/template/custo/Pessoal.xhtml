@@ -1,0 +1,52 @@
+<ui:composition template="/boletim/Cadastro.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+	<ui:define name="custoPessoal">
+		<p:dataTable value="#{boletimBean.boletim.custosPessoal}" var="item"
+			rowIndexVar="linha">
+			<p:column headerText="Tipo" style="text-align: center; width: 100px">
+				<h:outputText value="#{item.cargo.tipoCargo.descricao}" />
+			</p:column>
+
+
+			<p:column headerText="Cargo" style="text-align: center; width: 100px">
+				<p:outputLabel value="#{item.cargo.descricao}" />
+			</p:column>
+
+			<p:column headerText="Elementos"
+				style="text-align: center; width: 100px">
+				<p:inputNumber size="5" value="#{item.elementos}" />
+			</p:column>
+
+			<p:column headerText="Salários"
+				style="text-align: center; width: 100px">
+				<p:inputNumber size="15" value="#{item.salarios}" decimalPlaces="2"
+					decimalSeparator="," symbol="R$ " />
+			</p:column>
+			<p:column headerText="Prêmios"
+				style="text-align: center; width: 100px">
+				<p:inputNumber size="15" value="#{item.premios}" decimalPlaces="2"
+					decimalSeparator="," symbol="R$ " />
+			</p:column>
+			<p:column headerText="Horas extras"
+				style="text-align: center; width: 100px">
+				<p:inputNumber size="15" value="#{item.horasExtras}"
+					decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+			</p:column>
+			<p:column headerText="Outros"
+				style="text-align: center; width: 100px">
+				<p:inputNumber size="15" value="#{item.outrosPagamentos}"
+					decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+			</p:column>
+			<p:column headerText="Encargos"
+				style="text-align: center; width: 100px">
+				<p:inputNumber size="15" value="#{item.encargosSociais}"
+					decimalPlaces="2" decimalSeparator="," symbol="R$ " />
+			</p:column>
+		</p:dataTable>
+	</ui:define>
+</ui:composition>

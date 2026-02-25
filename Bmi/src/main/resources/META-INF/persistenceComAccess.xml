@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0"
+	xmlns="http://java.sun.com/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+
+	<persistence-unit name="BoletimAcc">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+		<properties>
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.SQLServerDialect" />
+			<property name="hibernate.connection.url"
+				value="jdbc:ucanaccess://D:/Tecnotran/SINDPAS/BancoDeDados/boletempbd.mdb;" />
+			<property name="hibernate.connection.driver_class"
+				value="net.ucanaccess.jdbc.UcanaccessDriver" />
+			<property name="hibernate.archive.autodetection"
+				value="class" />
+		</properties>
+	</persistence-unit>
+
+
+	<persistence-unit name="BoletimPU">
+		<provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+		<properties>
+			<!-- <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/boletim?useTimezone=true&amp;serverTimezone=UTC&amp;useSSL=false" 
+				/> -->
+			<property name="javax.persistence.jdbc.url"
+				value="jdbc:mysql://localhost/boletim?autoReconnect=true" />
+			<property name="javax.persistence.jdbc.user" value="boletim" />
+			<property name="javax.persistence.jdbc.password" value="bmi" />
+			<property name="validationQuery" value="SELECT 1" />
+			<property name="javax.persistence.jdbc.driver"
+				value="com.mysql.jdbc.Driver" />
+			<property name="hibernate.dialect"
+				value="org.hibernate.dialect.MySQLDialect" />
+	<!-- 
+			<property name="hibernate.show_sql" value="true" />
+			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.hbm2ddl.auto" value="none" />
+-->
+
+		</properties>
+
+	</persistence-unit>
+
+
+
+
+</persistence>

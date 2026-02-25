@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title><ui:insert name="titulo">Boletins Mensais Informativos - BMI</ui:insert></title>
+	<h:outputStylesheet library="css" name="sistema.css" />
+	<h:outputStylesheet name="primeicons/primeicons.css"
+		library="primefaces" />
+</h:head>
+
+
+<h:body>
+	<p:ajaxStatus styleClass="ajax-status">
+		<f:facet name="start">
+			<h:graphicImage library="images" name="loading.gif" />
+		</f:facet>
+		<f:facet name="complete">
+			<h:outputText value="" />
+		</f:facet>
+	</p:ajaxStatus>
+
+	<header>
+	<div style="float: left">
+		<h:link outcome="/Home">
+			<h1>
+				<h:outputText value="BMI"
+					style="color: #ffffff !important; height: 30px; line-height: 30px; margin-right: 60px" />
+			</h1>
+		</h:link>
+
+	</div>
+
+	<div style="float: right; margin-right: 110px">
+		<span
+			style="float: left; height: 30px; line-height: 30px; margin-right: 60px">
+			Olá #{seguranca.usuario.nome}! </span>
+
+		<h:form style="display: inline-block">
+			<p:menubar styleClass="menu-sistema">
+				<p:submenu label="Boletim ">
+					<p:menuitem value="Cadastro" outcome="/boletim/Pesquisa.xhtml" />
+				</p:submenu>
+				<p:submenu label="Administração"
+					rendered="#{seguranca.administrador}">
+					<p:menuitem value="Usuários"
+						outcome="/seguranca/usuario/Pesquisa.xhtml" />
+					<p:menuitem value="Planilha padrão"
+						outcome="/administracao/planilha/padrao/Pesquisa.xhtml" />
+					<p:menuitem value="Consistir sistema"
+						outcome="/administracao/consistencia/Pesquisa.xhtml" />
+					<p:menuitem value="Importar BMI"
+						outcome="/administracao/integracao/importa/Importa.xhtml" />
+					<p:menuitem value="Exportar BMI"
+						outcome="/administracao/integracao/exporta/Exporta.xhtml" />
+				</p:submenu>
+				<p:submenu label="Relatorios">
+					<p:menuitem value="Composição do custo"
+						outcome="/relatorios/ComposicaoCusto.xhtml" />
+					<p:menuitem value="Evolução custo/Km"
+						outcome="/relatorios/EvolucaoCustoKm.xhtml" />
+				</p:submenu>
+				<p:menuitem value="Trocar senha" outcome="/TrocarSenha.xhtml" />
+				<p:menuitem value="Sair" url="/Bmi/j_spring_security_logout" />
+			</p:menubar>
+		</h:form>
+	</div>
+	<div style="clear: both"></div>
+	</header>
+
+	<div id="conteudo">
+
+		<ui:insert name="corpo" />
+	</div>
+
+	<p:separator style="margin-top: 20px" />
+
+	<footer> <p:outputLabel value="Agora" /> <p:outputLabel
+		value="#{principalBean.agora}" /> </footer>
+
+
+</h:body>
+
+</html>

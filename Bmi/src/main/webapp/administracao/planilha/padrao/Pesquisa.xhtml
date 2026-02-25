@@ -1,0 +1,51 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">BMI</ui:define>
+
+	<ui:define name="corpo">
+		<h:form>
+
+			<p:messages autoUpdate="true" />
+			<p:toolbar style="margin-top: 20px">
+				<f:facet name="left">
+					<p:commandButton title="pesquisar" value="Pesquisar"
+						action="#{planilhaPrecosBean.pesquisar}" icon="pi pi-search"
+						update="@form" />
+				</f:facet>
+			</p:toolbar>
+
+			<p:panel columns="6" id="painel" header="Critérios de seleção"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+				<p:outputLabel for="mes" value="Mês referência" />
+				<p:datePicker id="mes" value="#{planilhaPrecosBean.filtroDataReferencia}"
+					timeZone="GMT-3" view="month" pattern="MM/yyyy"
+					yearNavigator="true" />
+
+			</p:panel>
+			<p:dataTable id="lista" var="item" value="#{planilhaPrecosBean.planilhas}"
+				emptyMessage="Parâmetros não encontrados" paginator="true" rows="20"
+				paginatorAlwaysVisible="false" sortBy="#{item.dataReferencia}" >
+				<p:column style="width: 10px; text-align: center">
+ 					<p:button outcome="/administracao/planilha/padrao/Cadastro" icon="ui-icon-pencil"
+						title="Editar">
+						<f:param name="idStr" value="#{item.id}" />
+					</p:button> 
+				</p:column>
+				<p:column headerText="Data de referência"
+					style="text-align: center; width: 100px">
+					<h:outputText value="#{item.dataReferencia}">
+						<f:convertDateTime pattern="MM/yyyy" />
+					</h:outputText>
+				</p:column>
+
+			</p:dataTable>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

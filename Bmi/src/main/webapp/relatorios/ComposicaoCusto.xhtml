@@ -1,0 +1,57 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="titulo">BMI</ui:define>
+
+	<ui:define name="corpo">
+		<h:form>
+
+			<h1>Boletim Mensal Informativo</h1>
+			<p:messages autoUpdate="true" />
+			<p:toolbar style="margin-top: 20px">
+				<p:toolbarGroup align="left">
+					<p:commandButton value="Emitir" icon="pi pi-file-pdf" styleClass="ui-button-outlined"
+						action="#{relatorioBean.emitirComposicaoCusto}" update="@form"  ajax="false"/>
+				</p:toolbarGroup>
+			</p:toolbar>
+
+			<p:panelGrid columns="8" id="painel"
+				style="width: 100%; margin-top: 20px" columnClasses="rotulo, campo">
+
+				<p:outputLabel value="Empresa" for="filtroEmp" />
+				<p:selectOneMenu id="filtroEmp" value="#{relatorioBean.empresa}">
+
+					<f:selectItem itemLabel="Selecione a empresa" />
+					<f:selectItems value="#{principalBean.listaEmpresa}"
+						var="filtroEmp" itemValue="#{filtroEmp}" itemLabel="#{filtroEmp}" />
+				</p:selectOneMenu>
+
+ 				<p:outputLabel value="Tipo de Movimento" for="tipoMovimento" />
+				<p:selectOneMenu id="tipoMovimento" required="true"
+					value="#{relatorioBean.tipoMovimento}">
+<!-- 					<f:selectItem itemLabel="Selecione o tipo" />  -->
+					<f:selectItems value="#{principalBean.tiposMovimento}" 
+						var="tipoMovimento" itemValue="#{tipoMovimento}"
+						itemLabel="#{tipoMovimento.descricao}" />
+				</p:selectOneMenu> 
+
+				<p:outputLabel for="dataInicio" value="Data inicial" />
+				<p:datePicker id="dataInicio" value="#{relatorioBean.dataInicio}"
+					timeZone="UTC-3" view="month" pattern="MM/yyyy"
+					yearNavigator="true" />
+					
+				<p:outputLabel for="dataFim" value="Data final" />
+				<p:datePicker id="dataFim" value="#{relatorioBean.dataFim}"
+					timeZone="UTC-3" view="month" pattern="MM/yyyy"
+					yearNavigator="true" />
+
+			</p:panelGrid>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

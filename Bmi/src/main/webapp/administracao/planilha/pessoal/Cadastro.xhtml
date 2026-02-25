@@ -1,0 +1,196 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+			<f:metadata>
+				<o:viewParam name="idStr" value="#{pessoalBean.idStr}" />
+			</f:metadata>
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button type="button" value="Novo" icon="pi pi-plus"
+						outcome="/planilha/pessoal/Cadastro" />
+					<p:commandButton value="Clonar" icon="pi pi-copy"
+						action="#{pessoalBean.clonar}" update="@form" />
+					<p:button type="button" value="Pesquisar" icon="pi pi-search"
+						outcome="/planilha/pessoal/Pesquisa" />
+					<span class="ui-separator"> <span
+						class="ui-icon pi pi-ellipsis-v" />
+					</span>
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						action="#{pessoalBean.salvar}" update="@form" />
+					<p:commandButton title="Excluir" value="Excluir"
+						disabled="#{pessoalBean.planilha.id == null}"
+						action="#{pessoalBean.excluir}" icon="pi pi-trash" />
+				</f:facet>
+			</p:toolbar>
+			<h:panelGrid columns="6" style="width: 100%; margin-top: 20px">
+							<!--
+				<p:column>
+					<p:outputLabel value="Mês referência" for="mes"/>
+				</p:column>
+
+				<p:column>
+					<p:datePicker value="#{pessoalBean.planilha.dataReferencia}" 
+						required="true" timeZone="UTC-3" id="mes" view="month" 
+						pattern="MM/yyyy" yearNavigator="true" />
+				</p:column>
+				
+				<p:column>
+					<p:outputLabel value="Tipo de Movimento" for="tpMov"/>
+				</p:column>
+
+				<p:column>
+					<p:selectOneMenu required="true"  id="tpMov"
+						value="#{pessoalBean.planilha.tipoMovimento}">
+						<f:selectItem itemLabel="Selecione o tipo" />
+						<f:selectItems value="#{pessoalBean.tiposMovimento}"
+							var="tipoMovimento" itemValue="#{tipoMovimento}"
+							itemLabel="#{tipoMovimento.descricao}" />
+					</p:selectOneMenu>
+				</p:column>
+  -->
+
+
+				<p:outputLabel />
+				<p:outputLabel />
+			</h:panelGrid>
+			<p:panel header="Custos de pessoal">
+				<h:panelGrid columns="6" style="width: 100%; margin-top: 20px">
+					<p:column>
+						<p:outputLabel value="Taxa de Encargos sociais" />
+						<p:inputNumber value="#{pessoalBean.planilha.taxaEncargos}" type="percent"
+							required="true" symbol="%" symbolPosition="s" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="Vale alimentação" />
+						<p:inputNumber value="#{pessoalBean.planilha.valeAlimentacao}"
+							required="true" decimalPlaces="2" title="R$/empregado/mês" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="Plano de Saúde" />
+						<p:inputNumber value="#{pessoalBean.planilha.planoSaude}" 
+							required="true" decimalPlaces="2" title="R$/empregado/mês" />
+					</p:column>
+				</h:panelGrid>
+				<p:panelGrid style="width: 100%; margin-top: 20px">
+					<f:facet name="header">
+						<p:row>
+							<p:column>
+								<p:outputLabel />
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Salário Normativo" />
+
+							</p:column>
+							<p:column>
+								<p:outputLabel value="Remuneração adicional" />
+							</p:column>
+
+							<p:column>
+								<p:outputLabel value="Fator de Utilização" />
+							</p:column>
+						</p:row>
+					</f:facet>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Motorista" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.salarioMotorista}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.adicionalMotorista}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.fuMotorista}"
+								required="true" decimalPlaces="4" title="R$/empregado/mês" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Cobrador" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.salarioCobrador}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.adicionalCobrador}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.fuCobrador}"
+								required="true" decimalPlaces="4" title="R$/empregado/mês" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Fiscal" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.salarioFiscal}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.adicionalFiscal}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.fuFiscal}"
+								required="true" decimalPlaces="4" title="R$/empregado/mês" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Pessoal Administrativo" />
+						</p:column>
+						<p:column>
+							<p:inputNumber
+								value="#{pessoalBean.planilha.salarioAdministracao}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber
+								value="#{pessoalBean.planilha.adicionalAdministracao}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.fuAdministracao}"
+								required="true" decimalPlaces="4" title="R$/empregado/mês" />
+						</p:column>
+					</p:row>
+					<p:row>
+						<p:column>
+							<p:outputLabel value="Pessoal de manutenção" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.salarioManutencao}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber
+								value="#{pessoalBean.planilha.adicionalManutencao}"
+								required="true" decimalPlaces="2" title="R$/empregado/mês" />
+						</p:column>
+						<p:column>
+							<p:inputNumber value="#{pessoalBean.planilha.fuManutencao}"
+								required="true" decimalPlaces="4" title="R$/empregado/mês" />
+						</p:column>
+					</p:row>
+				</p:panelGrid>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

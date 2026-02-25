@@ -1,0 +1,118 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:p="http://primefaces.org/ui" xmlns:o="http://omnifaces.org/ui">
+
+
+	<ui:define name="corpo">
+		<h:form>
+
+			<p:messages id="messages" autoUpdate="true" />
+
+			<p:toolbar>
+				<f:facet name="left">
+					<p:button type="button" value="Novo" icon="pi pi-plus"
+						outcome="/planilha/indicesEconomicos/Cadastro" />
+					<p:commandButton title="Salvar" icon="pi pi-save" value="Salvar"
+						action="#{indicesEconomicos.salvar}" update="@form" />
+					<p:commandButton title="Excluir" value="Excluir"
+						disabled="#{indicesEconomicos.indice.id == null}"
+						action="#{indicesEconomicos.excluir}" icon="pi pi-trash" />
+				</f:facet>
+			</p:toolbar>
+			<p:panel header="Índices econômicos">
+				<h:panelGrid columns="2" columnClasses="coluna20, coluna80">
+					<p:column>
+						<p:outputLabel value="Mês referência" for="mes" />
+					</p:column>
+					<p:column>
+						<p:datePicker value="#{indicesEconomicos.indice.dataReferencia}"
+							required="true" timeZone="UTC-3" id="mes" view="month"
+							pattern="MM/yyyy" yearNavigator="true" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="IPCA" for="ipca" />
+					</p:column>
+					<p:column>
+						<p:inputNumber value="#{indicesEconomicos.indice.ipca}" id="ipca"
+							required="true" decimalPlaces="4" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="IGPM" for="despAdm" />
+					</p:column>
+					<p:column>
+						<p:inputNumber value="#{indicesEconomicos.indice.igpm}"
+							id="despAdm" required="true" decimalPlaces="4" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="FGV 1416653 (Peças)" for="tx" />
+					</p:column>
+					<p:column>
+						<p:inputNumber value="#{indicesEconomicos.indice.fgvPecas}"
+							id="tx" required="true" decimalPlaces="4" title="R$/KM" />
+					</p:column>
+					<p:column>
+						<p:outputLabel value="FGV 1420741 (Rodagem)" for="pe" />
+					</p:column>
+					<p:column>
+						<p:inputNumber value="#{indicesEconomicos.indice.fgvRodagem}"
+							id="pe" required="true" decimalPlaces="4" title="R$/KM" />
+					</p:column>
+				</h:panelGrid>
+
+			</p:panel>
+			<p:panel>
+				<p:dataTable var="item" rowIndexVar="linha"
+					paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					value="#{indicesEconomicos.indices}" allowUnsorting="true"
+					sortMode="single" paginator="true" rows="20">
+
+					<p:column headerText="Mês" style="text-align: center; width: 100px"
+						sortBy="#{item.dataReferencia}">
+						<h:outputText value="#{item.dataReferencia}">
+							<f:convertDateTime pattern="MM/yyyy" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="IPCA"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.ipca}">
+							<f:convertNumber pattern="#0.000" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="IGPM"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.ipca}">
+							<f:convertNumber pattern="#0.000" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="FGV 1416653 (Peças)"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.fgvPecas}">
+							<f:convertNumber pattern="#0.000" />
+						</h:outputText>
+					</p:column>
+					<p:column headerText="FGV 1420741 (Rodagem)"
+						style="text-align: center; width: 100px">
+						<h:outputText value="#{item.fgvRodagem}">
+							<f:convertNumber pattern="#0.000" />
+						</h:outputText>
+					</p:column>
+
+					<p:column style="width: 10px; text-align: center">
+						<p:commandButton icon="ui-icon-pencil" title="Editar"
+							update="@form" process="@this">
+							<f:setPropertyActionListener value="#{item}"
+								target="#{indicesEconomicos.indice}" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+			</p:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+
+

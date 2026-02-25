@@ -2,12 +2,14 @@ package br.com.tecnotran.bmi.controller;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
@@ -29,6 +33,8 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.event.RowEditEvent;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import org.primefaces.model.file.UploadedFile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -194,14 +200,11 @@ public class BoletimBean implements Serializable {
 	}
 
 	private void montaDadosParaConsistencia() {
-		CustoPessoal custoPessoal = null;
-		Material custoVariavel = null;
 		filtroDataReferencia = boletim.getDataReferencia();
 		filtroTipoMovimento = boletim.getTipoMovimento();
 		pesquisar();
 
 		boletimSistema = new Boletim();
-		PlanilhaPadrao plan = null;
 		List<ClausulaFiltro> filtros = new ArrayList<ClausulaFiltro>();
 		ClausulaFiltro c2 = new ClausulaFiltro();
 		c2.setNomePropriedade("dataReferencia");
@@ -924,8 +927,8 @@ public class BoletimBean implements Serializable {
 
 		fa.setBoletim(bmiImport);
 		fa.setTipoVeiculoApoio(dao.findAll(TipoVeiculoApoio.class, filtros).get(0));
-		fa.setQuilometragem(new BigDecimal(campos[5]).divide(CEM));
-		fa.setValor(new BigDecimal(campos[6]).divide(CEM));
+		fa.setValor(new BigDecimal(campos[5]).divide(CEM));
+		fa.setQuilometragem(new BigDecimal(campos[6]).divide(CEM));
 
 	}
 
@@ -1017,10 +1020,8 @@ public class BoletimBean implements Serializable {
 
 	public void exportar() {
 		try {
-			FacesUtil.addInfoMessage("Aguarde o fim da exportação.");
-
 			// exportarXlsx();
-			exportarCsv();
+			//exportarCsv();
 			FacesUtil.addInfoMessage("Exportação realizada com sucesso!");
 		} catch (
 
@@ -1029,10 +1030,123 @@ public class BoletimBean implements Serializable {
 		}
 	}
 
-	private void exportarCsv() {
-		List<Object[]> lista;
-		lista = dao.recuperaParaExportacao("movto-custos-operac", filtroDataReferencia);
-		List<String> custosOperacionais = geraListaCustosOperac(lista);
+	public StreamedContent getArquivosExportacao() {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ZipOutputStream zipOut = new ZipOutputStream(baos);
+			List<Object[]> lista;
+			
+			// ==========================
+			// Arquivo 1 - movto-custos-operac
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-custos-operac", filtroDataReferencia);
+			List<String> custos = geraListaCustosOperac(lista);
+
+
+			zipOut.putNextEntry(new ZipEntry("movto-custos-operac.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();
+			
+			
+			// ==========================
+			// Arquivo 2 - movto-desp-geral
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-desp-geral", filtroDataReferencia);
+			custos = geraListaDespGeral(lista);
+			zipOut.putNextEntry(new ZipEntry("movto-desp-geral.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();		
+			
+			// ==========================
+			// Arquivo 3 - movto-desp-trib
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-desp-trib", filtroDataReferencia);
+			custos = geraListaDespTrib(lista);
+			zipOut.putNextEntry(new ZipEntry("movto-desp-trib.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();	
+			
+			// ==========================
+			// Arquivo 4 - movto-frota
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-frota", filtroDataReferencia);
+			custos = geraListaMovtoFrota(lista);
+			zipOut.putNextEntry(new ZipEntry("movto-frota.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();
+			
+			// ==========================
+			// Arquivo 5 - movto-frota-apoio
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-frota-apoio", filtroDataReferencia);
+			custos = geraListaMovtoFrotaApoio(lista);
+			zipOut.putNextEntry(new ZipEntry("movto-frota-apoio.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();
+			
+			
+			// ==========================
+			// Arquivo 6 - movto-materiais
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-materiais", filtroDataReferencia);
+			custos = geraListaMovtoMateriais(lista);
+			zipOut.putNextEntry(new ZipEntry("movto-materiais.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();
+			
+			// ==========================
+			// Arquivo 7 - movto-servico-manut
+			// ==========================
+			lista = dao.recuperaParaExportacao("movto-servico-manut", filtroDataReferencia);
+			custos = geraListaMovtoServicoManut(lista);
+			zipOut.putNextEntry(new ZipEntry("movto-servico-manut.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();
+			
+			
+			// ==========================
+			// Arquivo 8 - tab-kilometr
+			// ==========================
+			lista = dao.recuperaParaExportacao("tab-kilometr", filtroDataReferencia);
+			custos = geraListaTabKilometr(lista);
+			zipOut.putNextEntry(new ZipEntry("tab-kilomet.csv"));
+
+			for (String l : custos) {
+				zipOut.write(l.getBytes(StandardCharsets.UTF_8));
+			}
+			zipOut.closeEntry();
+			
+			
+			zipOut.close();
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(baos.toByteArray());
+
+			return DefaultStreamedContent.builder().name("arquivos.zip").contentType("application/zip")
+					.stream(() -> inputStream).build();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new NegocioException(e.getMessage());
+		}
 	}
 
 	private void exportarXlsx() {
@@ -1082,25 +1196,170 @@ public class BoletimBean implements Serializable {
 		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
 		// Linha de cabecalho
 		String linha;
-		linha = "cod-empresa;mes-ano;cod-cargo:tipmov;elementos;salario;premios;hora-extra;outros pagtos;encargos";
+		linha = "cod-empresa;mes-ano;cod-cargo;tipmov;elementos;salario;premios;hora-extra;outros pagtos;encargos\n";
 		retorno.add(linha);
 		// linhas de dados
 		for (Object[] obj : lista) {
-			linha = (obj[0]).toString()+';';
-			linha = linha + (obj[1]).toString()+';';
-			linha = linha + (obj[2]).toString()+';';
-			linha = linha + (obj[3]).toString()+';';
-			linha = linha + (obj[4]).toString()+';';
-			linha = linha + df.format(obj[5])+';';
-			linha = linha + df.format(obj[6])+';';
-			linha = linha + df.format(obj[7])+';';
-			linha = linha + df.format(obj[8])+';';
-			linha = linha + df.format(obj[9]);
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + (obj[4]).toString() + ';';
+			linha = linha + df.format(obj[5]) + ';';
+			linha = linha + df.format(obj[6]) + ';';
+			linha = linha + df.format(obj[7]) + ';';
+			linha = linha + df.format(obj[8]) + ';';
+			linha = linha + df.format(obj[9]) + "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
+	private List<String> geraListaDespGeral(List<Object[]> lista) {
+
+		List<String> retorno = new ArrayList<String>();
+		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;cod-desp-geral;tipmov;valor-desp-geral\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + df.format(obj[4]) + "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
+	
+	private List<String> geraListaDespTrib(List<Object[]> lista) {
+
+		List<String> retorno = new ArrayList<String>();
+		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;cod-desp-geral;tipmov;valor-desp\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + df.format(obj[4]) + "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
+	private List<String> geraListaMovtoFrota(List<Object[]> lista) {
+
+		List<String> retorno = new ArrayList<String>();
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;tipmov;veic_efetivos;veic_reservas\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + (obj[4]).toString() + "\n";
 			retorno.add(linha);
 		}
 		return retorno;
 	}
 
+	private List<String> geraListaMovtoFrotaApoio(List<Object[]> lista) {
+		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
+		List<String> retorno = new ArrayList<String>();
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;cod-equipto;tipmov;valor-equipto;Km-mes;valor-mes\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + df.format(obj[4]) + ';';
+			linha = linha + df.format(obj[5]) + ';';
+			linha = linha + df.format(obj[6]) +  "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
+	
+	private List<String> geraListaMovtoMateriais(List<Object[]> lista) {
+		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
+		List<String> retorno = new ArrayList<String>();
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;cod-material;tipmov;qtde-material;preco-unit\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + df.format(obj[4]) + ';';
+			linha = linha + df.format(obj[5]) +  "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
+	
+	private List<String> geraListaMovtoServicoManut(List<Object[]> lista) {
+		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
+		List<String> retorno = new ArrayList<String>();
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;cod-servico;tipmov;valor-servico;especificacao;qtde-serv\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + df.format(obj[4]) + ';';
+			linha = linha +  ';';
+			linha = linha + (obj[6] == null ? "" : (obj[6]).toString()) +  "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
+	
+	
+	private List<String> geraListaTabKilometr(List<Object[]> lista) {
+		DecimalFormat df = new DecimalFormat("###.00", new DecimalFormatSymbols(Locale.FRANCE));
+		List<String> retorno = new ArrayList<String>();
+		// Linha de cabecalho
+		String linha;
+		linha = "cod-empresa;mes-ano;tipmov;cod-piso;km_rodado\n";
+		retorno.add(linha);
+		// linhas de dados
+		for (Object[] obj : lista) {
+			linha = (obj[0]).toString() + ';';
+			linha = linha + (obj[1]).toString() + ';';
+			linha = linha + (obj[2]).toString() + ';';
+			linha = linha + (obj[3]).toString() + ';';
+			linha = linha + df.format(obj[4]) +  "\n";
+			retorno.add(linha);
+		}
+		return retorno;
+	}
+	
 	public void consistirSistema() {
 		montaConsulta();
 		pesquisar();

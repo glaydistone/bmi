@@ -21,8 +21,9 @@
 				<p:commandButton value="Pesquisar" action="#{boletimBean.pesquisar}"
 					update="@form" />
 				<p:commandButton title="Exporta BMI´s bloqueados" value="Exportar"
-					action="#{boletimBean.exportar}" icon="pi pi-sign-in"
-					update="@form" />
+					icon="pi pi-sign-in" ajax="false">
+					<p:fileDownload value="#{boletimBean.arquivosExportacao}" />
+				</p:commandButton>
 
 			</p:panel>
 			<p:dataTable id="listaProdutos" var="item"
@@ -38,19 +39,23 @@
 				</p:column>
 				<p:column headerText="Exportar"
 					style="text-align: center; width: 100px">
-					<h:outputText value="#{item.bloqueado ? 'Sim' : 'Não'}" style="#{item.bloqueado ? 'color: black' : 'color: red'}"/>
+					<h:outputText value="#{item.bloqueado ? 'Sim' : 'Não'}"
+						style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
 				</p:column>
 				<p:column headerText="Empresa"
 					style="text-align: center; width: 100px">
-					<h:outputText value="#{item.empresa.numero}" style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
+					<h:outputText value="#{item.empresa.numero}"
+						style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
 				</p:column>
-				<p:column headerText="Razão social" 
+				<p:column headerText="Razão social"
 					style="text-align: center; width: 100px  ">
-					<h:outputText value="#{item.empresa.razaoSocial}" style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
+					<h:outputText value="#{item.empresa.razaoSocial}"
+						style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
 				</p:column>
 				<p:column headerText="Movimento"
 					style="text-align: center; width: 100px">
-					<h:outputText value="#{item.tipoMovimento.descricao}" style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
+					<h:outputText value="#{item.tipoMovimento.descricao}"
+						style="#{item.bloqueado ? 'color: black' : 'color: red'}" />
 				</p:column>
 			</p:dataTable>
 		</h:form>

@@ -765,7 +765,7 @@ public class BoletimBean implements Serializable {
 		c2.setValorPropriedade(Long.parseLong(campos[1]));
 		filtros.add(c2);
 
-		boletim.setEmpresa(dao.findAll(Empresa.class, filtros).get(0));
+		bmiImport.setEmpresa(dao.findAll(Empresa.class, filtros).get(0));
 		try {
 			bmiImport.setDataReferencia(new SimpleDateFormat("dd/MM/yy").parse(campos[2]));
 		} catch (ParseException e) {
@@ -774,7 +774,7 @@ public class BoletimBean implements Serializable {
 		if (campos[3].equals("1")) {
 			bmiImport.setTipoMovimento(TipoMovimento.SEMI_URBANO);
 		} else {
-			boletim.setTipoMovimento(TipoMovimento.RODOVIARIO);
+			bmiImport.setTipoMovimento(TipoMovimento.RODOVIARIO);
 		}
 		try {
 			bmiImport.setFrotaEfetiva(Integer.parseInt(campos[4]));
@@ -847,6 +847,64 @@ public class BoletimBean implements Serializable {
 				} catch (Exception e) {
 					throw new NegocioException(
 							"Inconsistência encontrada no conteúdo do arquivo. Erro na linha " + conta);
+				}
+			}
+			List<Cargo> cargos = dao.findAll(Cargo.class);
+			boolean existe;
+			Cargo faltaCargo = null;
+			for (Cargo cargo :cargos) {
+				existe = false;
+				for (CustoPessoal cp: bmiImport.getCustosPessoal()) {
+					faltaCargo = cargo;
+					if (cp.getCargo().equals(cargo)) {
+						existe = true;
+						break;
+					}
+				}
+				if (!existe) {
+					CustoPessoal cpes = new CustoPessoal();
+					bmiImport.getCustosPessoal().add(cpes);
+					cpes.setBoletim(bmiImport);
+					cpes.setCargo(faltaCargo);
+				}
+			}
+			
+			List<TipoDespesa> tipoDespesas = dao.findAll(TipoDespesa.class);
+			TipoDespesa faltaTpd = null;
+			for (TipoDespesa tpd :tipoDespesas) {
+				existe = false;
+				for (DespesaGeral dg: bmiImport.getDespesasGerais()) {
+					faltaTpd = tpd;
+					if (dg.getTipoDespesa().equals(tpd)) {
+						existe = true;
+						break;
+					}
+				}
+				if (!existe) {
+					DespesaGeral dgr = new DespesaGeral();
+					bmiImport.getDespesasGerais().add(dgr);
+					dgr.setBoletim(bmiImport);
+					dgr.setTipoDespesa(faltaTpd);
+				}
+			}
+			
+			List<TipoMaterial> materiais = dao.findAll(TipoMaterial.class);
+			TipoMaterial faltaMat = null;
+			for (TipoMaterial tpm :materiais) {
+				existe = false;
+				for (Material mt: bmiImport.getMateriais()) {
+					faltaMat = tpm;
+					if (mt.getTipoMaterial().equals(tpm)) {
+						existe = true;
+						break;
+					}
+				}
+				if (!existe) {
+					Material mt = new Material();
+					bmiImport.getMateriais().add(mt);
+					mt.setBoletim(bmiImport);
+					mt.setTipoMaterial(faltaMat);
+					mt.setPreco(BigDecimal.ZERO);
 				}
 			}
 
@@ -929,6 +987,7 @@ public class BoletimBean implements Serializable {
 		fa.setTipoVeiculoApoio(dao.findAll(TipoVeiculoApoio.class, filtros).get(0));
 		fa.setValor(new BigDecimal(campos[5]).divide(CEM));
 		fa.setQuilometragem(new BigDecimal(campos[6]).divide(CEM));
+		List<TipoVeiculoApoio> lista = dao.findAll(TipoVeiculoApoio.class);
 
 	}
 

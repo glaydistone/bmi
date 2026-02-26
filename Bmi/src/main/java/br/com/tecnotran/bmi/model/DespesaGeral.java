@@ -34,7 +34,7 @@ public class DespesaGeral extends BaseEntity {
 	@JoinColumn(name = "id_tipo_despesa", nullable = false, foreignKey = @ForeignKey(name="FK_dspGeral_tipoDsp"))
 	private TipoDespesa tipoDespesa;
 	
-	private BigDecimal valor;
+	private BigDecimal valor = BigDecimal.ZERO;
 	
 	@Column(name="fator_ajuste")
 	private BigDecimal fatorAjuste = BigDecimal.ONE;

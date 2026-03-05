@@ -17,7 +17,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
 import br.com.tecnotran.bmi.model.BaseEntity;
-import br.com.tecnotran.bmi.model.Empresa;
 import br.com.tecnotran.bmi.model.seguranca.Usuario;
 import javassist.NotFoundException;
 
@@ -55,7 +54,7 @@ public class BaseDAO implements Serializable {
 	 * @return newly created id for the entity.
 	 */
 	public Long save(BaseEntity entity) {
-		manager.merge(entity);
+		entity = manager.merge(entity);
 		return entity.getId();
 	}
 
@@ -248,10 +247,11 @@ public class BaseDAO implements Serializable {
 		return usuario;
 	}
 
-	public List<Object[]> recuperaParaExportacao(String view, Date dataReferencia) {
+	public List<Object[]> recuperaBmiParaExportacao(String view, Date dataReferencia) {
 		String strDate = new SimpleDateFormat("dd/MM/yy").format(dataReferencia);
 		String query = "SELECT * FROM `" + view + "` WHERE bloqueado and `mes-ano` = '"+strDate+"'";
 		
+		@SuppressWarnings("unchecked")
 		List<Object[]> lista = manager.createNativeQuery(query).getResultList();
 		return lista;
 	}

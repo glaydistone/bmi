@@ -372,7 +372,8 @@ public class BoletimService implements Serializable {
 		EntityTransaction trx = dao.getTransaction();
 		try {
 			trx.begin();
-			retorno = dao.save(entidade);
+			b.setId(dao.save(entidade));
+			retorno = b.getId();
 			trx.commit();
 		} catch (Exception e) {
 			trx.rollback();

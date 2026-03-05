@@ -35,11 +35,11 @@ public class CustoPessoal extends BaseEntity {
 	@JoinColumn(name = "id_cargo", nullable = false, foreignKey = @ForeignKey(name = "FK_custoPes_cargo"))
 	private Cargo cargo;
 
-	@Column(name="fator_ajuste")
+	@Column(name = "fator_ajuste")
 	private BigDecimal fatorAjuste = BigDecimal.ONE;
-	
+
 	public BigDecimal getFatorAjuste() {
-		//return fatorAjuste;  // retornar 1 até avaliar melhor essa alternativa
+		// return fatorAjuste; // retornar 1 até avaliar melhor essa alternativa
 		return BigDecimal.ONE;
 	}
 
@@ -119,10 +119,9 @@ public class CustoPessoal extends BaseEntity {
 	@Transient
 	BigDecimal diferencaFU = BigDecimal.ZERO;
 
-
 	public BigDecimal getCustoVeiculo() {
-		return (getRemuneracaoMedia().add(getValeAlimentacao()).add(getPlanoSaude()))
-				.multiply(getFatorUtilizacao()).multiply((BigDecimal.ONE.add(getTaxaEncargos())));
+		return (getRemuneracaoMedia().add(getValeAlimentacao()).add(getPlanoSaude())).multiply(getFatorUtilizacao())
+				.multiply((BigDecimal.ONE.add(getTaxaEncargos())));
 	}
 
 	public BigDecimal getCustoVeiculoPlanilha() {
@@ -130,7 +129,6 @@ public class CustoPessoal extends BaseEntity {
 				.multiply(getFatorUtilizacaoPlanilha()).multiply((BigDecimal.ONE.add(getTaxaEncargosPlanilha())));
 	}
 
-	
 	public BigDecimal getDiferencaSalario() {
 		if (getSalarioMedioPlanilha().compareTo(BigDecimal.ZERO) > 0) {
 			return getSalarioMedioPlanilha().subtract(getSalarioMedio()).abs().divide(getSalarioMedioPlanilha(), 2,
@@ -227,17 +225,19 @@ public class CustoPessoal extends BaseEntity {
 		if (getRemuneracaoMediaPlanilha() == null) {
 			return null;
 		} else {
-			DecimalFormat df = new DecimalFormat( "#,##0.00" );
-			
+			DecimalFormat df = new DecimalFormat("#,##0.00");
+
 			/*
-			String retorno = df.format(getRemuneracaoMediaPlanilha().multiply(new BigDecimal(0.99)));
-			retorno = retorno +" a "+df.format(getRemuneracaoMediaPlanilha().multiply(new BigDecimal(1.015)));
-			*/
+			 * String retorno = df.format(getRemuneracaoMediaPlanilha().multiply(new
+			 * BigDecimal(0.99))); retorno = retorno
+			 * +" a "+df.format(getRemuneracaoMediaPlanilha().multiply(new
+			 * BigDecimal(1.015)));
+			 */
 			String retorno = df.format(getRemuneracaoMediaPlanilha());
 			return retorno;
 		}
 	}
-	
+
 	public void setRemuneracaoMediaPlanilha(BigDecimal remuneracaoMediaPlanilha) {
 		this.remuneracaoMediaPlanilha = remuneracaoMediaPlanilha.multiply(getFatorAjuste());
 	}
@@ -271,7 +271,8 @@ public class CustoPessoal extends BaseEntity {
 	}
 
 	public void setPlanoSaudePlanilha(BigDecimal planoSaudePlanilha) {
-		this.planoSaudePlanilha = planoSaudePlanilha.multiply(getFatorAjuste());;
+		this.planoSaudePlanilha = planoSaudePlanilha.multiply(getFatorAjuste());
+		;
 	}
 
 	public BigDecimal getValeAlimentacao() {
@@ -316,6 +317,13 @@ public class CustoPessoal extends BaseEntity {
 
 	public BigDecimal getRemuneracaoTotal() {
 		try {
+			if (getCargo().getNumero().equals(new Long("4"))) {
+				setEncargosSociais((getSalarios().add(getHorasExtras()).add(getOutrosPagamentos()).add(getPremios()))
+						.multiply(new BigDecimal("0.20")));
+			} else {
+				setEncargosSociais((getSalarios().add(getHorasExtras()).add(getOutrosPagamentos()).add(getPremios()))
+						.multiply(new BigDecimal("0.373")));
+			}
 			return getSalarios().add(getHorasExtras()).add(getOutrosPagamentos()).add(getPremios());
 		} catch (Exception e) {
 			return BigDecimal.ZERO;
@@ -344,7 +352,7 @@ public class CustoPessoal extends BaseEntity {
 
 	public BigDecimal getRemuneracaoMedia() {
 		if (getElementos() > 0) {
-			return getRemuneracaoTotal().divide(new BigDecimal(getElementos()),2, RoundingMode.HALF_EVEN);
+			return getRemuneracaoTotal().divide(new BigDecimal(getElementos()), 2, RoundingMode.HALF_EVEN);
 		} else {
 			return BigDecimal.ZERO;
 		}
@@ -367,10 +375,11 @@ public class CustoPessoal extends BaseEntity {
 	}
 
 	public BigDecimal getFatorUtilizacao() {
-		if (getBoletim() == null || getElementos() == null || getBoletim().getFrotaTotal() == null || getBoletim().getFrotaTotal() == 0) {
+		if (getBoletim() == null || getElementos() == null || getBoletim().getFrotaTotal() == null
+				|| getBoletim().getFrotaTotal() == 0) {
 			return null;
 		} else {
-			return new BigDecimal(getElementos().doubleValue() /getBoletim().getFrotaTotal().doubleValue());
+			return new BigDecimal(getElementos().doubleValue() / getBoletim().getFrotaTotal().doubleValue());
 		}
 
 	}

@@ -518,6 +518,7 @@
 										value="#{boletimBean.boletim.custoAdministracao.limiteRemuneracaoPlanilha}" />
 
 								</p:column>
+								<!-- 
 								<p:column
 									style="#{(boletimBean.boletim.diferencaEncargosAdm gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaEncargosAdm gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
 									<p:outputLabel
@@ -533,6 +534,7 @@
 											minFractionDigits="2" type="percent" />
 									</p:outputLabel>
 								</p:column>
+								-->
 							</p:row>
 						</p:panelGrid>
 						<p:dataTable value="#{boletimBean.boletim.pessoalAdministrativo}"
@@ -599,11 +601,17 @@
 
 							<p:column headerText="Encargos"
 								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.encargosSociais}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+								<!-- 
 								<p:inputNumber value="#{item.encargosSociais}" decimalPlaces="2"
 									decimalSeparator="," thousandSeparator=".">
 									<p:ajax event="change" process="@this"
 										update="form:tabDados:comparaAdm tblAdm" />
 								</p:inputNumber>
+								 -->
 							</p:column>
 						</p:dataTable>
 					</p:tab>
@@ -720,11 +728,17 @@
 							</p:column>
 							<p:column headerText="Encargos"
 								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.encargosSociais}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+								<!-- 
 								<p:inputNumber value="#{item.encargosSociais}" decimalPlaces="2"
 									decimalSeparator="," thousandSeparator=".">
 									<p:ajax event="change" process="@this"
 										update="form:tabDados:comparaManutencao tblManutencao" />
 								</p:inputNumber>
+								 -->
 							</p:column>
 
 						</p:dataTable>
@@ -833,11 +847,17 @@
 								</p:outputLabel>
 							</p:column>
 							<p:column headerText="Encargos" style="text-align: center">
-								<p:inputNumber value="#{item.encargosSociais}" required="true"
-									emptyValue="zero" decimalSeparator="," thousandSeparator="."
-									decimalPlaces="2" size="12">
-									<p:ajax event="change" process="@this" update="tblOperacao" />
-								</p:inputNumber>
+								<p:outputLabel value="#{item.encargosSociais}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+								<!-- 
+									<p:inputNumber value="#{item.encargosSociais}" required="true"
+										emptyValue="zero" decimalSeparator="," thousandSeparator="."
+										decimalPlaces="2" size="12">
+										<p:ajax event="change" process="@this" update="tblOperacao" />
+									</p:inputNumber>
+									-->
 							</p:column>
 
 
@@ -886,6 +906,8 @@
 										value="#{boletimBean.boletim.custoOperacao.limiteRemuneracaoPlanilha}" />
 								</p:column>
 
+								<!-- 
+
 								<p:column
 									style="#{(boletimBean.boletim.diferencaEncargosOutros gt 0.1 ) ? 'background-color: #F6CED8' :  (boletimBean.boletim.diferencaEncargosOutros gt 0.05 ) ? 'background-color: #ffffcc' :  ''}">
 									<p:outputLabel
@@ -901,6 +923,7 @@
 											minFractionDigits="2" type="percent" />
 									</p:outputLabel>
 								</p:column>
+								 -->
 							</p:row>
 						</p:panelGrid>
 						<p:dataTable value="#{boletimBean.boletim.pessoalOutros}"
@@ -967,11 +990,17 @@
 							</p:column>
 							<p:column headerText="Encargos"
 								style="text-align: center; width: 100px">
+								<p:outputLabel value="#{item.encargosSociais}">
+									<f:convertNumber locale="pt_BR" maxFractionDigits="2"
+										minFractionDigits="2" />
+								</p:outputLabel>
+								<!-- 
 								<p:inputNumber value="#{item.encargosSociais}" decimalPlaces="2"
 									decimalSeparator="," thousandSeparator=".">
 									<p:ajax event="change" process="@this"
 										update="form:tabDados:comparaOutros tbloutros" />
 								</p:inputNumber>
+								 -->
 							</p:column>
 						</p:dataTable>
 					</p:tab>

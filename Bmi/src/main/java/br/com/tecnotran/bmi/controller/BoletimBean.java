@@ -21,8 +21,9 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
-import javax.faces.bean.ViewScoped;
+import javax.faces.view.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -1057,16 +1058,20 @@ public class BoletimBean implements Serializable {
 
 	}
 
-	public void importar() {
+	public String importar() {
+		String retorno = null;
 		try {
 
 			Boletim bmiImport = new Boletim();
 			importarBMI(arquivo, bmiImport);
-			service.importar(bmiImport);
-			String detalhe = "Empresa " + boletim.getEmpresa() + " " + bmiImport.getTipoMovimento();
+			bmiImport.setId(service.importar(bmiImport));
+			String detalhe = "Empresa " + bmiImport.getEmpresa() + " " + bmiImport.getTipoMovimento();
 			FacesContext.getCurrentInstance().addMessage(null,
 					new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", detalhe));
+			
+    		retorno =  "/boletim/Consistencia.xhtml?faces-redirect=true&modo=c&idStr="+bmiImport.getId();
 			bmiImport = null;
+		//	FacesContext.getCurrentInstance().getExternalContext().redirect(retorno);
 
 		} catch (
 
@@ -1075,6 +1080,7 @@ public class BoletimBean implements Serializable {
 					new FacesMessage(FacesMessage.SEVERITY_ERROR, "Erro", e.getMessage()));
 
 		}
+		return retorno;
 	}
 
 	public void exportar() {
@@ -1098,7 +1104,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 1 - movto-custos-operac
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-custos-operac", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-custos-operac", filtroDataReferencia);
 			List<String> custos = geraListaCustosOperac(lista);
 
 
@@ -1113,7 +1119,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 2 - movto-desp-geral
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-desp-geral", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-desp-geral", filtroDataReferencia);
 			custos = geraListaDespGeral(lista);
 			zipOut.putNextEntry(new ZipEntry("movto-desp-geral.csv"));
 
@@ -1125,7 +1131,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 3 - movto-desp-trib
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-desp-trib", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-desp-trib", filtroDataReferencia);
 			custos = geraListaDespTrib(lista);
 			zipOut.putNextEntry(new ZipEntry("movto-desp-trib.csv"));
 
@@ -1137,7 +1143,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 4 - movto-frota
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-frota", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-frota", filtroDataReferencia);
 			custos = geraListaMovtoFrota(lista);
 			zipOut.putNextEntry(new ZipEntry("movto-frota.csv"));
 
@@ -1149,7 +1155,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 5 - movto-frota-apoio
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-frota-apoio", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-frota-apoio", filtroDataReferencia);
 			custos = geraListaMovtoFrotaApoio(lista);
 			zipOut.putNextEntry(new ZipEntry("movto-frota-apoio.csv"));
 
@@ -1162,7 +1168,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 6 - movto-materiais
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-materiais", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-materiais", filtroDataReferencia);
 			custos = geraListaMovtoMateriais(lista);
 			zipOut.putNextEntry(new ZipEntry("movto-materiais.csv"));
 
@@ -1174,7 +1180,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 7 - movto-servico-manut
 			// ==========================
-			lista = dao.recuperaParaExportacao("movto-servico-manut", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("movto-servico-manut", filtroDataReferencia);
 			custos = geraListaMovtoServicoManut(lista);
 			zipOut.putNextEntry(new ZipEntry("movto-servico-manut.csv"));
 
@@ -1187,7 +1193,7 @@ public class BoletimBean implements Serializable {
 			// ==========================
 			// Arquivo 8 - tab-kilometr
 			// ==========================
-			lista = dao.recuperaParaExportacao("tab-kilometr", filtroDataReferencia);
+			lista = dao.recuperaBmiParaExportacao("tab-kilometr", filtroDataReferencia);
 			custos = geraListaTabKilometr(lista);
 			zipOut.putNextEntry(new ZipEntry("tab-kilomet.csv"));
 
@@ -1211,7 +1217,7 @@ public class BoletimBean implements Serializable {
 	private void exportarXlsx() {
 		Workbook workbook = new HSSFWorkbook();
 		List<Object[]> lista;
-		lista = dao.recuperaParaExportacao("movto-custos-operac", filtroDataReferencia);
+		lista = dao.recuperaBmiParaExportacao("movto-custos-operac", filtroDataReferencia);
 		geraAbaCustosOperac(lista, workbook);
 	}
 
@@ -1653,6 +1659,8 @@ public class BoletimBean implements Serializable {
 			boletim.setQuilometragem_piso2(BigDecimal.ZERO);
 			boletim.setQuilometragem_piso3(BigDecimal.ZERO);
 			boletim.setQuilometragemTotal(BigDecimal.ZERO);
+			boletim.setBloqueado(false);
+			boletim.setDigitacaoConcluida(false);
 			FacesUtil.addInfoMessage("Faça as alterações e salve os dados.");
 		} catch (CloneNotSupportedException e) {
 			FacesUtil.addErrorMessage(e.getMessage());
